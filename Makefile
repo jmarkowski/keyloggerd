@@ -1,10 +1,25 @@
 CC = gcc
-CFLAGS = -Wall -O0 -ggdb -std=c11
+CFLAGS  = -c -Wall -O0 -ggdb -std=c11
+
+SRCS = main.c
 
 PROG = keyloggerd
 
-all: src/main.c
-	$(CC) $(CFLAGS) $< -o $(PROG)
+VPATH = src
+
+OBJ_DIR = obj
+OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) -o $(PROG) $^
+
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJ_DIR):
+	mkdir -p $@
 
 print-%:
 # Debug target used for dumping makefile variables.
@@ -12,7 +27,7 @@ print-%:
 	@echo '$*=$($*)'
 
 clean:
-	-rm -f *.o
-	-rm $(PROG)
+	-rm -rf $(OBJ_DIR)
+	-rm -f $(PROG)
 
 .PHONY: all clean
