@@ -3,7 +3,7 @@ CFLAGS = -Wall -O0 -ggdb -std=c11
 
 PROG = keyloggerd
 
-all: keyloggerd.c
+all: src/main.c
 	$(CC) $(CFLAGS) $< -o $(PROG)
 
 clean:
