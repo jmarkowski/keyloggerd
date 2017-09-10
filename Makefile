@@ -1,3 +1,11 @@
+# Define V=1 for a verbose compile.
+ifneq ($(V),1)
+QUIET_CC = @echo '   ' CC $@;
+QUIET_LD = @echo '   ' LD $@;
+QUIET_SUBDIR = @echo '   ' SUBDIR $@;
+export V
+endif
+
 CC = gcc
 CFLAGS  = -c -Wall -O0 -ggdb -std=c11
 
@@ -14,13 +22,13 @@ OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(CC) -o $(PROG) $^
+	$(QUIET_LD)$(CC) -o $(PROG) $^
 
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) $< -o $@
+	$(QUIET_CC)$(CC) $(CFLAGS) $< -o $@
 
 $(OBJ_DIR):
-	mkdir -p $@
+	$(QUIET_SUBDIR)mkdir -p $@
 
 print-%:
 # Debug target used for dumping makefile variables.
