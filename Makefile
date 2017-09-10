@@ -1,7 +1,8 @@
 CC = gcc
 CFLAGS  = -c -Wall -O0 -ggdb -std=c11
 
-SRCS = main.c
+SRCS += main.c
+SRCS += parse-args.c
 
 PROG = keyloggerd
 
