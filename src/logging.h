@@ -4,10 +4,10 @@
 typedef struct {
     void (*open)(void);
     void (*close)(void);
-    void (*info)(const char *msg);
-    void (*debug)(const char *msg);
-    void (*warn)(const char *msg);
-    void (*error)(const char *msg);
+    void (*info)(const char *fmt, ...);
+    void (*debug)(const char *fmt, ...);
+    void (*warn)(const char *fmt, ...);
+    void (*error)(const char *fmt, ...);
 } klog_t;
 
 extern klog_t klog;
