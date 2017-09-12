@@ -10,11 +10,18 @@ static bool is_open = false;
 
 static void log_open(void)
 {
-    const char *ident = cmd_args->cmd_name;
-    int option = LOG_CONS | LOG_PID;
-    int facility = LOG_DAEMON;
-
     if (!is_open) {
+        const char *ident = cmd_args->cmd_name;
+        int option = LOG_CONS | LOG_PID;
+        int facility = LOG_DAEMON;
+
+        int logmask = LOG_MASK(LOG_ERR)
+                    | LOG_MASK(LOG_WARNING)
+                    | LOG_MASK(LOG_INFO)
+                    | LOG_MASK(LOG_DEBUG);
+
+        setlogmask(logmask);
+
         openlog(ident, option, facility);
 
         is_open = true;
