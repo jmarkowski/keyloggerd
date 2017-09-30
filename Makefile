@@ -1,3 +1,18 @@
+PROG = keyloggerd
+
+CC = gcc
+CFLAGS  = -c -Wall -O0 -ggdb -std=c11
+
+C_FILES += main.c
+C_FILES += logging.c
+C_FILES += parse-args.c
+
+SRC_DIR = src
+OBJ_DIR = obj
+
+SRCS = $(addprefix $(SRC_DIR)/,$(C_FILES))
+OBJS = $(addprefix $(OBJ_DIR)/,$(C_FILES:.c=.o))
+
 # Define V=1 for a verbose compile.
 ifneq ($(V),1)
 QUIET_CC = @echo '   ' CC $@;
@@ -6,26 +21,12 @@ QUIET_SUBDIR = @echo '   ' SUBDIR $@;
 export V
 endif
 
-CC = gcc
-CFLAGS  = -c -Wall -O0 -ggdb -std=c11
-
-SRCS += main.c
-SRCS += logging.c
-SRCS += parse-args.c
-
-PROG = keyloggerd
-
-VPATH = src
-
-OBJ_DIR = obj
-OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.c=.o))
-
 all: $(PROG)
 
 $(PROG): $(OBJS)
 	$(QUIET_LD)$(CC) -o $(PROG) $^
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(QUIET_CC)$(CC) $(CFLAGS) $< -o $@
 
 $(OBJ_DIR):
