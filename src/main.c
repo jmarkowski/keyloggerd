@@ -1,9 +1,9 @@
+#include <errno.h>      /* for errno */
+#include <fcntl.h>      /* for open */
 #include <stdio.h>
 #include <stdlib.h>     /* for exit  */
 #include <string.h>     /* for strerror */
 #include <sys/stat.h>   /* for mode_t */
-#include <fcntl.h>      /* for open */
-#include <errno.h>      /* for errno */
 #include <unistd.h>     /* for getpid */
 
 #include "common.h"

@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <string.h>     /* for strrchr */
 #include <stdbool.h>    /* for bool */
+#include <stdio.h>
 #include <stdlib.h>     /* for malloc */
+#include <string.h>     /* for strrchr */
 
 #include "parse-args.h"
 

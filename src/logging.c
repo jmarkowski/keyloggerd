@@ -1,7 +1,7 @@
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <syslog.h>
-#include <stdbool.h>
-#include <stdarg.h>
 
 #include "common.h"
 #include "logging.h"
