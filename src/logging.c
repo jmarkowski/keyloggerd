@@ -8,6 +8,8 @@
 
 static bool is_open = false;
 
+static void log_do(int priority, const char *fmt, va_list ap);
+
 static void log_open(void)
 {
     if (!is_open) {
@@ -35,14 +37,56 @@ static void log_close(void)
     is_open = false;
 }
 
-static void dump_syslog(int level, const char *msg)
+static void log_info(const char *fmt, ...)
 {
-    syslog(level, msg);
+    va_list ap;
+
+    va_start(ap, fmt);
+    log_do(LOG_INFO, fmt, ap);
+    va_end(ap);
+}
+
+static void log_debug(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    log_do(LOG_DEBUG, fmt, ap);
+    va_end(ap);
+}
+
+static void log_warn(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    log_do(LOG_WARNING, fmt, ap);
+    va_end(ap);
+}
+
+static void log_error(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    log_do(LOG_ERR, fmt, ap);
+    va_end(ap);
+}
+
+static void log_do(int priority, const char *fmt, va_list ap)
+{
+    char buf[MAX_LOG_LEN];
+
+    log_open();
+
+    vsnprintf(buf, MAX_LOG_LEN - 1, fmt, ap);
+
+    syslog(priority, "%s", buf);
 
     if (cmd_args->debug) {
         char level_str[12];
 
-        switch (level) {
+        switch (priority) {
         case LOG_INFO:
             sprintf(level_str, "INFO");
             break;
@@ -59,64 +103,8 @@ static void dump_syslog(int level, const char *msg)
             sprintf(level_str, "(unknown)");
             break;
         }
-        printf("%s: %s\n", level_str, msg);
+        printf("%s: %s\n", level_str, buf);
     }
-}
-
-static void log_info(const char *fmt, ...)
-{
-    log_open();
-
-    char msg[1024];
-
-    va_list ap;
-    va_start(ap, fmt);
-    vsprintf(msg, fmt, ap);
-    va_end(ap);
-
-    dump_syslog(LOG_INFO, msg);
-}
-
-static void log_debug(const char *fmt, ...)
-{
-    log_open();
-
-    char msg[1024];
-
-    va_list ap;
-    va_start(ap, fmt);
-    vsprintf(msg, fmt, ap);
-    va_end(ap);
-
-    dump_syslog(LOG_DEBUG, msg);
-}
-
-static void log_warn(const char *fmt, ...)
-{
-    log_open();
-
-    char msg[1024];
-
-    va_list ap;
-    va_start(ap, fmt);
-    vsprintf(msg, fmt, ap);
-    va_end(ap);
-
-    dump_syslog(LOG_WARNING, msg);
-}
-
-static void log_error(const char *fmt, ...)
-{
-    log_open();
-
-    char msg[1024];
-
-    va_list ap;
-    va_start(ap, fmt);
-    vsprintf(msg, fmt, ap);
-    va_end(ap);
-
-    dump_syslog(LOG_ERR, msg);
 }
 
 klog_t klog = {
