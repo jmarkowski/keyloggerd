@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
 
     if (already_running()) {
         klog.error("Daemon is already running");
+        exit(1);
     }
 
     exit(0);
