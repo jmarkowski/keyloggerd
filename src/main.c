@@ -7,6 +7,7 @@
 #include <unistd.h>     /* for getpid */
 
 #include "common.h"
+#include "error.h"
 
 static void daemonize(void)
 {
@@ -30,8 +31,7 @@ static int already_running(void)
     fd = open(LOCKFILE, oflag, mode);
 
     if (fd == ERROR) {
-        klog.error("Failed to open %s: %s", LOCKFILE, strerror(errno));
-        exit(1);
+        err_quit("Failed to open %s: %s", LOCKFILE, strerror(errno));
     }
 
     struct flock lockp = {
@@ -42,8 +42,7 @@ static int already_running(void)
     };
 
     if (fcntl(fd, F_SETLK, &lockp) == ERROR) {
-        klog.error("Failed to lock %s: %s", LOCKFILE, strerror(errno));
-        exit(1);
+        err_quit("Failed to lock %s: %s", LOCKFILE, strerror(errno));
     }
 
     char buf[16];
@@ -62,8 +61,7 @@ int main(int argc, char *argv[])
     }
 
     if (already_running()) {
-        klog.error("Daemon is already running");
-        exit(1);
+        err_quit("Daemon is already running");
     }
 
     exit(0);

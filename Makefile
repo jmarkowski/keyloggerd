@@ -4,6 +4,7 @@ CC = gcc
 CFLAGS  = -c -Wall -O0 -ggdb -std=c11
 
 C_FILES += main.c
+C_FILES += error.c
 C_FILES += logging.c
 C_FILES += parse-args.c
 
