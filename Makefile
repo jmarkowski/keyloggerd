@@ -1,7 +1,7 @@
 PROG = keyloggerd
 
 CC = gcc
-CFLAGS  = -c -Wall -O0 -ggdb -std=c11
+CFLAGS  = -c -Wall -O0 -ggdb -std=gnu11
 
 C_FILES += main.c
 C_FILES += error.c
