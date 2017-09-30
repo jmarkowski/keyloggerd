@@ -3,6 +3,8 @@ PROG = keyloggerd
 CC = gcc
 CFLAGS  = -c -Wall -O0 -ggdb -std=gnu11
 
+CPPFLAGS = -DDEBUG
+
 C_FILES += main.c
 C_FILES += error.c
 C_FILES += logging.c
@@ -28,7 +30,7 @@ $(PROG): $(OBJS)
 	$(QUIET_LD)$(CC) -o $(PROG) $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(QUIET_CC)$(CC) $(CFLAGS) $< -o $@
+	$(QUIET_CC)$(CC) $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 $(OBJ_DIR):
 	$(QUIET_SUBDIR)mkdir -p $@

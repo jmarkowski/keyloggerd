@@ -57,10 +57,12 @@ static void daemonize(void)
      */
     pid_t pid;
 
+    klog.debug("Start [%d]", getpid());
+
     if ((pid = fork()) < 0) {
         err_quit("Cannot fork");
     } else if (pid != 0) { /* parent */
-        klog.debug("Parent closed");
+        klog.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
         exit(0);
     }
 
@@ -82,6 +84,7 @@ static void daemonize(void)
     if ((pid = fork()) < 0) {
         err_quit("Cannot fork");
     } else if (pid != 0) { /* parent */
+        klog.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
         exit(0);
     }
 
@@ -93,9 +96,17 @@ static void daemonize(void)
      * Change the current working directory to the root so we won't prevent file
      * systems from being unmounted.
      */
-    if (chdir("/") < 0) {
-        err_quit("Cannot change directory to /");
+#if DEBUG
+    char working_dir[80];
+    getcwd(working_dir, 80);
+#else
+    char *working_dir = "/";
+#endif
+    if (chdir(working_dir) < 0) {
+        err_quit("Cannot change directory to %s", working_dir);
     }
+
+    klog.debug("Change working directory to %s", working_dir);
 
     /*
      * Close all open file descriptors
@@ -171,6 +182,11 @@ int main(int argc, char *argv[])
     if (already_running()) {
         err_quit("Daemon is already running");
     }
+
+#if DEBUG
+    /* Dummy process so that I can test the daemon */
+    sleep(60);
+#endif
 
     klog.info("Daemon finished");
 
