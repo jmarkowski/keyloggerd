@@ -108,7 +108,7 @@ static void log_do(int priority, const char *fmt, va_list ap)
     }
 }
 
-klog_t klog = {
+logger_t logger = {
     .open = log_open,
     .close = log_close,
     .info = log_info,

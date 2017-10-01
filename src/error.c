@@ -24,7 +24,7 @@ static void err_do(const char *fmt, va_list ap)
 
     vsnprintf(buf, MAX_LOG_LEN - 1, fmt, ap);
 
-    klog.error(buf);
+    logger.error(buf);
 
     strcat(buf, "\n");
     fflush(stdout); /* In case stdout and stderr are the same */

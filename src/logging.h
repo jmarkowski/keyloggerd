@@ -10,8 +10,8 @@ typedef struct {
     void (*debug)(const char *fmt, ...);
     void (*warn)(const char *fmt, ...);
     void (*error)(const char *fmt, ...);
-} klog_t;
+} logger_t;
 
-extern klog_t klog;
+extern logger_t logger;
 
 #endif
