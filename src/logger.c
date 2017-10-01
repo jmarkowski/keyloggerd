@@ -5,14 +5,19 @@
 
 #include "common.h"
 #include "logger.h"
+#include "parse-args.h"
 
 static bool is_open = false;
 
 static void log_do(int priority, const char *fmt, va_list ap);
 
-static void log_open(const char *ident)
+static cmd_args_t cmd_args;
+
+static void log_open(cmd_args_t args)
 {
-    if (!is_open && ident) {
+    cmd_args = args;
+
+    if (!is_open && cmd_args.prog_name) {
         int option = LOG_CONS | LOG_PID;
         int facility = LOG_DAEMON;
 
@@ -23,7 +28,7 @@ static void log_open(const char *ident)
 
         setlogmask(logmask);
 
-        openlog(ident, option, facility);
+        openlog(cmd_args.prog_name, option, facility);
 
         is_open = true;
     }
@@ -84,7 +89,7 @@ static void log_do(int priority, const char *fmt, va_list ap)
 
     syslog(priority, "%s", buf);
 
-    if (cmd_args->debug) {
+    if (cmd_args.debug) {
         char level_str[12];
 
         switch (priority) {

@@ -3,11 +3,13 @@
 
 #include <stdbool.h>
 
+#define MAX_PROG_NAME 12
+
 typedef struct {
-    char *prog_name;
+    char prog_name[MAX_PROG_NAME];
     bool debug;
 } cmd_args_t;
 
-extern cmd_args_t *parse_args(int argc, char *argv[]);
+extern cmd_args_t parse_args(int argc, char *argv[]);
 
 #endif

