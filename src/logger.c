@@ -4,7 +4,7 @@
 #include <syslog.h>
 
 #include "common.h"
-#include "logging.h"
+#include "logger.h"
 
 static bool is_open = false;
 

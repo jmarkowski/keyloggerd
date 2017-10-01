@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "logging.h"
+#include "logger.h"
 #include "error.h"
 
 #define LOG_FILE "/tmp/keylog"

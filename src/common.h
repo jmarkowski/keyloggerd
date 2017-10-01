@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "logging.h"
+#include "logger.h"
 #include "parse-args.h"
 
 #define OK 0
