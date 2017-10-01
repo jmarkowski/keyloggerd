@@ -1,6 +1,8 @@
 #ifndef KEYLOGGERD_H
 #define KEYLOGGERD_H
 
-extern void keyloggerd(void);
+#include "input-args.h"
+
+extern void keyloggerd(cmd_args_t args);
 
 #endif
