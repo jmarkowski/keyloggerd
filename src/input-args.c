@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>     /* for strrchr */
 
-#include "parse-args.h"
+#include "input-args.h"
 
 static const char usage_str[] =
     "keyloggerd [-h | --help] [--debug]";

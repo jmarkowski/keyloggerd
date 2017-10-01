@@ -7,9 +7,9 @@ CPPFLAGS = -DDEBUG
 
 C_FILES += main.c
 C_FILES += error.c
+C_FILES += input-args.c
 C_FILES += keyloggerd.c
 C_FILES += logger.c
-C_FILES += parse-args.c
 
 SRC_DIR = src
 OBJ_DIR = obj

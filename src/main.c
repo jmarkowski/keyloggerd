@@ -12,7 +12,7 @@
 #include "common.h"
 #include "error.h"
 #include "keyloggerd.h"
-#include "parse-args.h"
+#include "input-args.h"
 
 /* @todo set to /var/run/keyloggerd.pid when super user support is added */
 #define LOCKFILE "keyloggerd.pid"

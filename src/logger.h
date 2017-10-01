@@ -1,7 +1,7 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "parse-args.h"
+#include "input-args.h"
 
 #define MAX_LOG_LEN 1024
 
