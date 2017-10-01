@@ -4,7 +4,7 @@
 #define MAX_LOG_LEN 1024
 
 typedef struct {
-    void (*open)(void);
+    void (*open)(const char *ident);
     void (*close)(void);
     void (*info)(const char *fmt, ...);
     void (*debug)(const char *fmt, ...);

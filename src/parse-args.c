@@ -13,7 +13,7 @@ static const char usage_str[] =
 cmd_args_t *parse_args(int argc, char *argv[])
 {
     cmd_args_t *cmd_args;
-    char *cmd_name;
+    char *prog_name;
 
     cmd_args = (cmd_args_t *) malloc(sizeof(cmd_args_t));
 
@@ -21,10 +21,10 @@ cmd_args_t *parse_args(int argc, char *argv[])
         return cmd_args;
     }
 
-    if ((cmd_name = strrchr(argv[0], '/')) == NULL) {
-        cmd_name = argv[0];
+    if ((prog_name = strrchr(argv[0], '/')) == NULL) {
+        prog_name = argv[0];
     } else {
-        cmd_name++;
+        prog_name++;
     }
 
     for (int k = 1; k < argc; k++) {
@@ -42,7 +42,7 @@ cmd_args_t *parse_args(int argc, char *argv[])
         }
     }
 
-    cmd_args->cmd_name = cmd_name;
+    cmd_args->prog_name = prog_name;
 
     return cmd_args;
 }

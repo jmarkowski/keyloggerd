@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 typedef struct {
-    char *cmd_name;
+    char *prog_name;
     bool debug;
 } cmd_args_t;
 
