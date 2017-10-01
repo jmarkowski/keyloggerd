@@ -22,7 +22,7 @@
  */
 static void daemonize(void)
 {
-    logger.debug("Starting keylogger daemon...");
+    logger.debug("Starting daemon");
 
     /*
      * Clear file creation mask and set it to a known value.
@@ -184,12 +184,12 @@ int main(int argc, char *argv[])
     daemonize();
 
     if (is_daemon_already_running()) {
-        err_quit("Aborting since daemon is already running");
+        err_quit("Aborting: daemon is already running");
     }
 
     keyloggerd();
 
-    logger.info("Daemon finished");
+    logger.info("Stopping daemon");
     logger.close();
 
     exit(0);
