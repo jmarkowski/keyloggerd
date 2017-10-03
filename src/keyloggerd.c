@@ -10,7 +10,6 @@
 #include "logger.h"
 #include "error.h"
 
-#define LOG_FILE "/tmp/keylog"
 #define BUFFSIZE 255
 
 int create_log(const cmd_args_t cmd_args)
@@ -22,7 +21,9 @@ int create_log(const cmd_args_t cmd_args)
      * truncate it to 0 */
     oflag = (O_WRONLY | O_CREAT | O_TRUNC);
 
-    sprintf(path, "%s", LOG_FILE);
+    getcwd(path, BUFFSIZE);
+    strcat(path, "/key.log");
+
     logger.info("Log file: %s", path);
 
     log_fd = open(path, oflag, O_WRONLY | cmd_args.keylog_mode);
