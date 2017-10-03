@@ -11,8 +11,9 @@
 
 #include "common.h"
 #include "error.h"
-#include "keyloggerd.h"
 #include "input-args.h"
+#include "keyloggerd.h"
+#include "logger.h"
 
 /* @todo set to /var/run/keyloggerd.pid when super user support is added */
 #define LOCKFILE "keyloggerd.pid"

