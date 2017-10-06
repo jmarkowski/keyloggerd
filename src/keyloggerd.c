@@ -4,6 +4,7 @@
 #include <linux/input-event-codes.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "common.h"
@@ -17,17 +18,25 @@ int create_log(const cmd_args_t cmd_args)
 {
     int oflag, log_fd;
     char path[BUFFSIZE];
+    struct stat stat_cwd;
 
     /* open for writing only, create file if doesn't exist, if file exists,
      * truncate it to 0 */
     oflag = (O_WRONLY | O_CREAT | O_TRUNC);
 
     getcwd(path, BUFFSIZE);
-    strcat(path, "/key.log");
 
+    /* collect information about the current directory */
+    stat(path, &stat_cwd);
+
+    strcat(path, "/key.log");
     logger.info("Log file: %s", path);
 
-    log_fd = open(path, oflag, O_WRONLY | cmd_args.keylog_mode);
+    log_fd = open(path, oflag, O_WRONLY);
+
+    /* Set the owner to match that of the directory that it's run under */
+    fchown(log_fd, stat_cwd.st_uid, stat_cwd.st_gid);
+    fchmod(log_fd, cmd_args.keylog_mode);
 
     return log_fd;
 }

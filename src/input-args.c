@@ -12,6 +12,8 @@ static const char usage_str[] =
 #define is_equal(a, b) (!strcmp(a, b))
 #define BIT(shift) (1 << (shift))
 
+#define DEFAULT_KEYLOG_MODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+
 static mode_t str2mode(const char *mode_str)
 {
     mode_t mode = 0;
@@ -61,7 +63,9 @@ static mode_t str2mode(const char *mode_str)
 
 cmd_args_t parse_args(int argc, char *argv[])
 {
-    cmd_args_t cmd_args = {};
+    cmd_args_t cmd_args = {
+        .keylog_mode = DEFAULT_KEYLOG_MODE
+    };
     char *prog_name;
 
     if ((prog_name = strrchr(argv[0], '/')) == NULL) {
