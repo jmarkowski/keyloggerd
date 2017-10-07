@@ -4,7 +4,9 @@
 #include <string.h>     /* for strrchr */
 #include <sys/stat.h>
 
+#include "common.h"
 #include "input-args.h"
+#include "keylog.h"
 
 static const char usage_str[] =
 "usage: keyloggerd [-h | --help] [--debug] [--file-mode <mode>]\n"
@@ -12,7 +14,6 @@ static const char usage_str[] =
 "                  [--append]";
 
 #define is_equal(a, b) (!strcmp(a, b))
-#define BIT(shift) (1 << (shift))
 
 static mode_t str2mode(const char *mode_str)
 {
@@ -93,13 +94,13 @@ cmd_args_t parse_args(int argc, char *argv[])
             const char *filename_str = argv[++k];
 
             if (filename_str) {
-                strncpy(cmd_args.keylog_filename, filename_str, KEY_LOG_LEN);
+                strncpy(cmd_args.keylog.filename, filename_str, KEY_LOG_LEN);
             } else {
                 printf("Invalid filename for key log: %s\n", filename_str);
                 exit(1);
             }
         } else if (is_equal(arg, "--append")) {
-            cmd_args.append_keylog = true;
+            cmd_args.keylog.flags = KEY_LOG_FLAG_APPEND;
         } else if (is_equal(arg, "--keyboard-device")) {
             const char *device_str = argv[++k];
 
@@ -118,7 +119,7 @@ cmd_args_t parse_args(int argc, char *argv[])
             const char *mode_str = argv[++k];
 
             if (mode_str) {
-                cmd_args.keylog_mode = str2mode(mode_str);
+                cmd_args.keylog.mode = str2mode(mode_str);
             } else {
                 printf("Invalid option for mode: %s\n", mode_str);
                 exit(1);

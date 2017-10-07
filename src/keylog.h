@@ -4,7 +4,12 @@
 #include <linux/input.h>
 #include <stdbool.h>
 
+#include "common.h"
 #include "input-args.h"
+
+enum {
+    KEY_LOG_FLAG_APPEND = BIT(0)
+};
 
 typedef struct keylog {
     int (*open)(struct keylog *kl);

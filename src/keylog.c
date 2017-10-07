@@ -12,10 +12,12 @@
 #define BUFFSIZE 255
 
 struct priv {
-    bool append;
-    int logfd; /* file descriptor */
-    mode_t logmode;
-    char logname[KEY_LOG_LEN];
+    struct {
+        int fd; /* file descriptor */
+        mode_t mode;
+        char name[KEY_LOG_LEN];
+        int flags;
+    } log;
 };
 
 static int keylog_open(keylog_t *kl)
@@ -29,7 +31,7 @@ static int keylog_open(keylog_t *kl)
     /* open for writing only, create file if doesn't exist */
     oflag = (O_WRONLY | O_CREAT);
 
-    if (priv->append) {
+    if (priv->log.flags & KEY_LOG_FLAG_APPEND) {
         oflag |= O_APPEND;
     } else {
         /* Truncate the file to 0 */
@@ -42,14 +44,14 @@ static int keylog_open(keylog_t *kl)
     stat(path, &stat_cwd);
 
     strcat(path, "/");
-    strcat(path, priv->logname);
+    strcat(path, priv->log.name);
     logger.info("Log file: %s", path);
 
-    priv->logfd = open(path, oflag, O_WRONLY);
+    priv->log.fd = open(path, oflag, O_WRONLY);
 
     /* Set the owner to match that of the directory that it's run under */
-    fchown(priv->logfd, stat_cwd.st_uid, stat_cwd.st_gid);
-    fchmod(priv->logfd, priv->logmode);
+    fchown(priv->log.fd, stat_cwd.st_uid, stat_cwd.st_gid);
+    fchmod(priv->log.fd, priv->log.mode);
 
     return OK;
 }
@@ -58,9 +60,9 @@ static int keylog_close(keylog_t *kl)
 {
     struct priv *priv = (struct priv *) kl->priv;
 
-    if (close(priv->logfd) == ERROR) {
+    if (close(priv->log.fd) == ERROR) {
         logger.error("Closing %s failed: %s",
-                     priv->logname, strerror(errno));
+                     priv->log.name, strerror(errno));
         return ERROR;
     }
 
@@ -132,7 +134,7 @@ static void keylog_log(keylog_t *kl, struct input_event e)
     default: c = '\0'; break;
     }
 
-    write(priv->logfd, &c, 1);
+    write(priv->log.fd, &c, 1);
 }
 
 keylog_t *create_keylog(const cmd_args_t cmd_args)
@@ -147,9 +149,9 @@ keylog_t *create_keylog(const cmd_args_t cmd_args)
     kl->close = keylog_close;
     kl->log = keylog_log;
 
-    priv->append = cmd_args.append_keylog;
-    priv->logmode = cmd_args.keylog_mode;
-    strncpy(priv->logname, cmd_args.keylog_filename, KEY_LOG_LEN);
+    priv->log.flags = cmd_args.keylog.flags;
+    priv->log.mode = cmd_args.keylog.mode;
+    strncpy(priv->log.name, cmd_args.keylog.filename, KEY_LOG_LEN);
 
     kl->priv = (void *) priv;
 
