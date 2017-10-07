@@ -69,6 +69,7 @@ RSHIFT, RSHIFT, RSHIFT | Start / stop key logging
 This project is a work in progress, and so there are still several things I'd
 like to do:
 
+* Allow the keyloggerd to either create a new log file or append to existing
 * Add timestamps
 * Add support for a conf file to configure key sequences
 * Enable intelligent detection of upper/lowercase keys
