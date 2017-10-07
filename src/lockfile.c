@@ -40,9 +40,11 @@ static int lockfile_lock(const lockfile_t *lf)
         return ERROR;
     }
 
-    char buf[16];
-    sprintf(buf, "%ld", (long) getpid());
-    write(fd, buf, strlen(buf)+1);
+    char buf[16] = { '\0' };
+    sprintf(buf, "%ld\n", (long) getpid());
+    write(fd, buf, strlen(buf));
+
+    close(fd);
 
     return OK;
 }
