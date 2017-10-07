@@ -1,10 +1,5 @@
-#include <errno.h>      /* for errno */
 #include <fcntl.h>      /* for open */
 #include <signal.h>     /* for sigaction */
-#include <stdbool.h>    /* for bool */
-#include <stdio.h>
-#include <stdlib.h>     /* for exit  */
-#include <string.h>     /* for strerror */
 #include <sys/resource.h>   /* for getrlimit */
 #include <sys/stat.h>   /* for mode_t */
 #include <unistd.h>     /* for getpid */
@@ -13,6 +8,7 @@
 #include "error.h"
 #include "input-args.h"
 #include "keyloggerd.h"
+#include "lockfile.h"
 #include "logger.h"
 
 /* @todo set to /var/run/keyloggerd.pid when super user support is added */
@@ -140,55 +136,28 @@ static void daemonize(void)
     /* Daemon initialization is finished */
 }
 
-/**
- * Ensure that only one copy of the daemon is running
- */
-static bool is_daemon_already_running(void)
-{
-    int fd;
-
-    int oflag = O_RDWR | O_CREAT | O_TRUNC;
-    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-
-    fd = open(LOCKFILE, oflag, mode);
-
-    if (fd == ERROR) {
-        logger.error("Failed to open %s: %s", LOCKFILE, strerror(errno));
-        return true;
-    }
-
-    struct flock lockp = {
-        .l_type = F_WRLCK,
-        .l_whence = SEEK_CUR,
-        .l_start = 0,
-        .l_len = 16,
-    };
-
-    if (fcntl(fd, F_SETLK, &lockp) == ERROR) {
-        logger.error("Failed to lock %s: %s", LOCKFILE, strerror(errno));
-        return true;
-    }
-
-    char buf[16];
-    sprintf(buf, "%ld", (long) getpid());
-    write(fd, buf, strlen(buf)+1);
-
-    return false;
-}
-
 int main(int argc, char *argv[])
 {
+    lockfile_t *lf;
     cmd_args_t cmd_args = parse_args(argc, argv);
 
     logger.open(cmd_args);
 
     daemonize();
 
-    if (is_daemon_already_running()) {
+    lf = create_lockfile(LOCKFILE);
+
+    if (lf->lock(lf) == ERROR) {
         err_quit("Aborting: daemon is already running");
     }
 
     keyloggerd(cmd_args);
+
+    if (lf->unlock(lf) == ERROR) {
+        err_quit("Failed to release lock to %s", lf->file);
+    }
+
+    destroy_lockfile(lf);
 
     logger.info("Stopping daemon");
     logger.close();

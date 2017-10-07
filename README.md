@@ -55,5 +55,4 @@ like to do:
 * Add support for a conf file to configure key sequences
 * Enable intelligent detection of upper/lowercase keys
 * Have the backspace react properly in the log
-* Clean up lockfile
 * Setup with autotools
