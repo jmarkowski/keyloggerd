@@ -7,8 +7,8 @@
 #include "input-args.h"
 
 static const char usage_str[] =
-    "keyloggerd [-h | --help] [--debug] "
-    "[-m | --mode] [-d | --keyboard-device ] ";
+"usage: keyloggerd [-h | --help] [--debug] [--file-mode <mode>]\n"
+"                  [--keyboard-device <device_path>]"
 
 #define is_equal(a, b) (!strcmp(a, b))
 #define BIT(shift) (1 << (shift))
@@ -82,7 +82,7 @@ cmd_args_t parse_args(int argc, char *argv[])
     for (int k = 1; k < argc; k++) {
         const char *arg = argv[k];
 
-        if (is_equal(arg, "-d") || is_equal(arg, "--keyboard-device")) {
+        if (is_equal(arg, "--keyboard-device")) {
             const char *device_str = argv[++k];
 
             if (device_str) {
@@ -96,7 +96,7 @@ cmd_args_t parse_args(int argc, char *argv[])
         } else if (is_equal(arg, "--help") || is_equal(arg, "-h")) {
             printf("%s\n", usage_str);
             exit(0);
-        } else if (is_equal(arg, "--mode") || is_equal(arg, "-m")) {
+        } else if (is_equal(arg, "--mode")) {
             const char *mode_str = argv[++k];
 
             if (mode_str) {
