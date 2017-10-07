@@ -18,7 +18,7 @@ This will compile the `keyloggerd` daemon.
 # Usage
 
 `keyloggerd` must be run as a super user because it requires detection of the
-input keyboard events from `/dev/input/event0`
+input keyboard events from `/dev/input/event0` (default)
 
 ```
 $ sudo ./keyloggerd
@@ -29,12 +29,31 @@ At this point two things were created in the working directory:
 1. A `keyloggerd.pid` file was created containing the PID of the daemon
 2. A `key.log` file that is now logging the keys pressed
 
+If you find that nothing is getting logged to `key.log`, no matter how many keys
+you bash, you may need to change your input device. For example:
+
+```
+$ sudo ./keyloggerd --keyboard-device /dev/input/event1
+```
+
+A good hint on how to discover your input device is to look in the
+`/var/log/Xorg.0.log` file.
+
+```
+$ cat /var/log/Xorg.0.log | grep keyboard
+```
+
+
+## Daemon Logs
+
 The keylogger daemon prints log information into the system log, which may be
 viewed as follows
 
 ```
 $ journalctl -xe
 ```
+
+## Secret Key Sequences
 
 Because the keys are logged, you may use the following sequence of keys to
 control the daemon:
@@ -50,7 +69,6 @@ RSHIFT, RSHIFT, RSHIFT | Start / stop key logging
 This project is a work in progress, and so there are still several things I'd
 like to do:
 
-* Generalize the input keyboard source
 * Add timestamps
 * Add support for a conf file to configure key sequences
 * Enable intelligent detection of upper/lowercase keys
