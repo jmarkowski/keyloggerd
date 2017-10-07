@@ -10,12 +10,12 @@
 #include "logger.h"
 
 #define BUFFSIZE 255
-#define LOG_NAME_LEN 128
 
 struct priv {
+    bool append;
     int logfd; /* file descriptor */
     mode_t logmode;
-    char logname[LOG_NAME_LEN];
+    char logname[KEY_LOG_LEN];
 };
 
 static int keylog_open(keylog_t *kl)
@@ -26,9 +26,15 @@ static int keylog_open(keylog_t *kl)
     char path[BUFFSIZE];
     struct stat stat_cwd;
 
-    /* open for writing only, create file if doesn't exist, if file exists,
-     * truncate it to 0 */
-    oflag = (O_WRONLY | O_CREAT | O_TRUNC);
+    /* open for writing only, create file if doesn't exist */
+    oflag = (O_WRONLY | O_CREAT);
+
+    if (priv->append) {
+        oflag |= O_APPEND;
+    } else {
+        /* Truncate the file to 0 */
+        oflag |= O_TRUNC;
+    }
 
     getcwd(path, BUFFSIZE);
 
@@ -141,8 +147,9 @@ keylog_t *create_keylog(const cmd_args_t cmd_args)
     kl->close = keylog_close;
     kl->log = keylog_log;
 
+    priv->append = cmd_args.append_keylog;
     priv->logmode = cmd_args.keylog_mode;
-    strncpy(priv->logname, "key.log", LOG_NAME_LEN);
+    strncpy(priv->logname, cmd_args.keylog_filename, KEY_LOG_LEN);
 
     kl->priv = (void *) priv;
 

