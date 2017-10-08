@@ -110,9 +110,9 @@ void keyloggerd(cmd_args_t cmd_args)
                     log_key_enabled = !log_key_enabled;
 
                     if (log_key_enabled) {
-                        logger.warn("Key logging enabled");
+                        logger.info("Key logging enabled");
                     } else {
-                        logger.warn("Key logging disabled");
+                        logger.info("Key logging disabled");
                     }
                 }
 

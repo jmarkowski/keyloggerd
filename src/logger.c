@@ -59,6 +59,15 @@ static void log_debug(const char *fmt, ...)
     va_end(ap);
 }
 
+static void log_notice(const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    log_do(LOG_NOTICE, fmt, ap);
+    va_end(ap);
+}
+
 static void log_warn(const char *fmt, ...)
 {
     va_list ap;
@@ -94,18 +103,27 @@ static void log_do(int priority, const char *fmt, va_list ap)
 
         switch (priority) {
         case LOG_INFO:
+            /* informational message */
             sprintf(level_str, "INFO");
             break;
         case LOG_DEBUG:
+            /* debug-level message */
             sprintf(level_str, "DEBUG");
             break;
+        case LOG_NOTICE:
+            /* normal, but significant, condition */
+            sprintf(level_str, "NOTICE");
+            break;
         case LOG_WARNING:
+            /* warning conditions */
             sprintf(level_str, "WARNING");
             break;
         case LOG_ERR:
+            /* error conditions */
             sprintf(level_str, "ERROR");
             break;
         default:
+            /* LOG_EMERG, LOG_ALERT, LOG_CRIT */
             sprintf(level_str, "(unknown)");
             break;
         }
@@ -118,6 +136,7 @@ logger_t logger = {
     .close = log_close,
     .info = log_info,
     .debug = log_debug,
+    .notice = log_notice,
     .warn = log_warn,
     .error = log_error,
 };

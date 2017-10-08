@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 
     destroy_lockfile(lf);
 
-    logger.info("Stopping daemon");
+    logger.warn("Stopping daemon");
     logger.close();
 
     exit(0);

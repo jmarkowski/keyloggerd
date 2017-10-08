@@ -61,7 +61,7 @@ static int keylog_close(keylog_t *kl)
     struct priv *priv = (struct priv *) kl->priv;
 
     if (close(priv->log.fd) == ERROR) {
-        logger.error("Closing %s failed: %s",
+        logger.warn("Closing %s failed: %s",
                      priv->log.name, strerror(errno));
         return ERROR;
     }

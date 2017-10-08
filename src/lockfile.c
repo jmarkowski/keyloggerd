@@ -56,8 +56,8 @@ static int lockfile_unlock(const lockfile_t *lf)
     }
 
     if (remove(lf->file) == ERROR) {
-        logger.error("Failed to remove %s: %s",
-                     lf->file, strerror(errno));
+        logger.warn("Failed to remove %s: %s",
+                    lf->file, strerror(errno));
         return ERROR;
     }
 
