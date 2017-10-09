@@ -28,6 +28,7 @@ struct priv {
         mode_t mode;
         char name[KEY_LOG_LEN];
         int flags;
+        char backspace;
     } log;
 };
 
@@ -118,7 +119,7 @@ static void keylog_log(keylog_t *kl, struct input_event e)
         return;
     }
 
-    char c;
+    char c = '\0';
     unsigned short code = e.code;
 
     switch (code) {
@@ -166,7 +167,10 @@ static void keylog_log(keylog_t *kl, struct input_event e)
     case KEY_DOT: c = '.'; break;
     case KEY_SLASH: c = '/'; break;
     case KEY_BACKSLASH: c = '\\'; break;
-    case KEY_BACKSPACE: c = '<'; break;
+
+    case KEY_BACKSPACE:
+        c = priv->log.backspace;
+        break;
 
     case KEY_MINUS: c = '-'; break;
     case KEY_EQUAL: c = '='; break;
@@ -231,6 +235,7 @@ keylog_t *create_keylog(const cmd_args_t cmd_args)
     kl->resume = keylog_resume;
 
     priv->log.flags = cmd_args.keylog.flags;
+    priv->log.backspace = cmd_args.keylog.backspace;
     priv->log.mode = cmd_args.keylog.mode;
     strncpy(priv->log.name, cmd_args.keylog.filename, KEY_LOG_LEN);
 

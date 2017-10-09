@@ -78,5 +78,4 @@ like to do:
 * Add timestamps
 * Add support for a conf file to configure key sequences
 * Enable intelligent detection of upper/lowercase keys
-* Have the backspace react properly in the log
 * Setup with autotools

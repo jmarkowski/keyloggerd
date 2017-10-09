@@ -65,7 +65,8 @@ static mode_t str2mode(const char *mode_str)
 static cmd_args_t arg_defaults(int argc, char *argv[])
 {
     cmd_args_t default_args = {
-        .keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+        .keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH),
+        .keylog.backspace = 8, /* ascii char 8 == backspace */
     };
 
     char *prog_name;
@@ -101,6 +102,15 @@ cmd_args_t parse_args(int argc, char *argv[])
             }
         } else if (is_equal(arg, "--append")) {
             cmd_args.keylog.flags = KEY_LOG_FLAG_APPEND;
+        } else if (is_equal(arg, "--backspace-char")) {
+            const char *bc_str = argv[++k];
+
+            if (bc_str) {
+                cmd_args.keylog.backspace = bc_str[0];
+            } else {
+                printf("Invalid option for backspace char: %s\n", bc_str);
+                exit(1);
+            }
         } else if (is_equal(arg, "--keyboard-device")) {
             const char *device_str = argv[++k];
 
