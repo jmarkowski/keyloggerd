@@ -10,31 +10,44 @@
 #include "lockfile.h"
 #include "logger.h"
 
-static int lockfile_lock(const lockfile_t *lf)
+/* Arguments same order as lseek */
+#define write_lock(fd, offset, whence, len) \
+    lock_do(fd, F_SETLK, F_WRLCK, (offset), (whence), (len))
+#define release_lock(fd, offset, whence, len) \
+    lock_do(fd, F_SETLK, F_UNLCK, (offset), (whence), (len))
+
+static int lock_do(int fd, int cmd,
+                   short type, off_t offset, short whence, off_t len)
+{
+    struct flock fl;
+
+    fl.l_type = type;       /* F_RDLCK, F_WRLCK, F_UNLCK */
+    fl.l_whence = whence;   /* SEEK_SET, SEEK_CUR, SEEK_END */
+    fl.l_start = offset;    /* byte offset, relative to l_whence */
+    fl.l_len = len;         /* # bytes (0 means to EOF) */
+
+    return fcntl(fd, cmd, &fl);
+}
+
+static int lockfile_lock(lockfile_t *lf)
 {
     if (!lf) {
         return ERROR;
     }
 
-    int oflag = O_RDWR | O_CREAT | O_TRUNC;
+    int oflag = O_RDWR | O_CREAT;
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 
-    int fd = open(lf->file, oflag, mode);
+    lf->fd = open(lf->file, oflag, mode);
 
-    if (fd == ERROR) {
+    if (lf->fd == ERROR) {
         logger.error("Failed to open %s: %s",
                      lf->file, strerror(errno));
         return ERROR;
     }
 
-    struct flock lockp = {
-        .l_type = F_WRLCK,
-        .l_whence = SEEK_CUR,
-        .l_start = 0,
-        .l_len = 16,
-    };
-
-    if (fcntl(fd, F_SETLK, &lockp) == ERROR) {
+    if (write_lock(lf->fd, 0, SEEK_SET, 0) == ERROR) {
+        /* Lock entire file for writing */
         logger.error("Failed to lock %s: %s",
                      lf->file, strerror(errno));
         return ERROR;
@@ -42,16 +55,33 @@ static int lockfile_lock(const lockfile_t *lf)
 
     char buf[16] = { '\0' };
     sprintf(buf, "%ld\n", (long) getpid());
-    write(fd, buf, strlen(buf));
+
+    lseek(lf->fd, 0, SEEK_SET); /* go to beginning */
+    write(lf->fd, buf, strlen(buf));
+
+    logger.info("Obtained PID file lock");
 
     return OK;
 }
 
-static int lockfile_unlock(const lockfile_t *lf)
+static int lockfile_unlock(lockfile_t *lf)
 {
-    if (!lf) {
+    if (!lf || lf->fd == -1) {
         return ERROR;
     }
+
+    if (release_lock(lf->fd, 0, SEEK_SET, 0) == ERROR) {
+        /* Unlock entire file */
+        logger.error("Failed to unlock %s: %s",
+                     lf->file, strerror(errno));
+        return ERROR;
+    }
+
+    close(lf->fd);
+
+    logger.info("Released PID file lock");
+
+    lf->fd = -1;
 
     if (remove(lf->file) == ERROR) {
         logger.warn("Failed to remove %s: %s",
@@ -71,6 +101,7 @@ lockfile_t * create_lockfile(const char * const file)
     lf->lock = lockfile_lock;
     lf->unlock = lockfile_unlock;
     lf->file = file;
+    lf->fd = -1;
 
     return lf;
 }

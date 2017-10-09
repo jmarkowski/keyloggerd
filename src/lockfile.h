@@ -2,9 +2,10 @@
 #define LOCK_FILE_H
 
 typedef struct lockfile {
-    int (*lock)(const struct lockfile *lf);
-    int (*unlock)(const struct lockfile *lf);
+    int (*lock)(struct lockfile *lf);
+    int (*unlock)(struct lockfile *lf);
     const char *file;
+    int fd;
 } lockfile_t;
 
 extern lockfile_t * create_lockfile(const char *file);
