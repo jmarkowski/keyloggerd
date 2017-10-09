@@ -11,10 +11,26 @@ enum {
     KEY_LOG_FLAG_APPEND = BIT(0)
 };
 
+typedef struct keylog keylog_t;
+typedef struct keyseq keyseq_t;
+
+struct keyseq {
+    unsigned short *keys;
+    unsigned short size;
+    unsigned short index;
+    void (*callback)(keylog_t *kl);
+};
+
 typedef struct keylog {
+    bool logging_enabled;
+
     int (*open)(struct keylog *kl);
     int (*close)(struct keylog *kl);
-    void (*log)(struct keylog *kl, struct input_event e);
+    void (*process_event)(struct keylog *kl, struct input_event e);
+    void (*install_seq)(struct keylog *kl, struct keyseq ks);
+
+    void (*pause)(struct keylog *kl);
+    void (*resume)(struct keylog *kl);
 
     void *priv;
 } keylog_t;
