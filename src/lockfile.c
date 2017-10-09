@@ -44,8 +44,6 @@ static int lockfile_lock(const lockfile_t *lf)
     sprintf(buf, "%ld\n", (long) getpid());
     write(fd, buf, strlen(buf));
 
-    close(fd);
-
     return OK;
 }
 
