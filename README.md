@@ -77,5 +77,5 @@ like to do:
 
 * Add timestamps
 * Add support for a conf file to configure key sequences
-* Enable intelligent detection of upper/lowercase keys
+* Add ability to tell if capslock is enabled or not
 * Setup with autotools
