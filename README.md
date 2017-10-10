@@ -24,10 +24,10 @@ input keyboard events from `/dev/input/event0` (default)
 $ sudo ./keyloggerd
 ```
 
-At this point two things were created in the working directory:
+This results in two files being created:
 
-1. A `keyloggerd.pid` file was created containing the PID of the daemon
-2. A `key.log` file that is now logging the keys pressed
+1. `/var/run/keyloggerd.pid` containing the PID of the daemon
+2. `/tmp/key.log` that is now logging the keys pressed
 
 If you find that nothing is getting logged to `key.log`, no matter how many keys
 you bash, you may need to change your input device. For example:
@@ -43,11 +43,11 @@ A good hint on how to discover your input device is to look in the
 $ cat /var/log/Xorg.0.log | grep keyboard
 ```
 
-The name of the key log file may be specified, along with whether you'd like to
-append to the existing key log.
+The `key.log` will be overwritten every time the `keyloggerd` daemon runs. If
+instead you'd like to append to it each time, you may use the `--append` switch.
 
 ```
-$ sudo ./keyloggerd -f newname.log --append
+$ sudo ./keyloggerd --append
 ```
 
 ## Daemon Logs
