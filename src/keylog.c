@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <fcntl.h>      /* for open */
 #include <stdbool.h>    /* for bool */
+#include <stdio.h>      /* for snprintf */
 #include <stdlib.h>     /* for malloc */
 #include <string.h>     /* for strerror */
 #include <sys/stat.h>   /* for mode */
@@ -55,8 +56,7 @@ static int keylog_open(keylog_t *kl)
     /* collect information about the current directory */
     stat(path, &stat_cwd);
 
-    strcat(path, "/");
-    strcat(path, priv->log.name);
+    snprintf(path, BUFFSIZE, "/tmp/%s", priv->log.name);
     logger.info("Log file: %s", path);
 
     priv->log.fd = open(path, oflag, O_WRONLY);
