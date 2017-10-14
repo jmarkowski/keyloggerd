@@ -62,20 +62,12 @@ static mode_t str2mode(const char *mode_str)
     return mode;
 }
 
-static cmd_args_t arg_defaults(int argc, char *argv[])
+static cmd_args_t arg_defaults(char *prog_name)
 {
     cmd_args_t default_args = {
         .keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH),
         .keylog.backspace = 8, /* ascii char 8 == backspace */
     };
-
-    char *prog_name;
-
-    if ((prog_name = strrchr(argv[0], '/')) == NULL) {
-        prog_name = argv[0];
-    } else {
-        prog_name++;
-    }
 
     strncpy(default_args.prog_name, prog_name, MAX_PROG_NAME);
     strncpy(default_args.keyboard_device, "/dev/input/event0", MAX_DEVICE_PATH);
@@ -86,7 +78,15 @@ static cmd_args_t arg_defaults(int argc, char *argv[])
 
 cmd_args_t parse_args(int argc, char *argv[])
 {
-    cmd_args_t cmd_args = arg_defaults(argc, argv);
+    char *prog_name;
+
+    if ((prog_name = strrchr(argv[0], '/')) == NULL) {
+        prog_name = argv[0];
+    } else {
+        prog_name++;
+    }
+
+    cmd_args_t cmd_args = arg_defaults(prog_name);
 
     for (int k = 1; k < argc; k++) {
         const char *arg = argv[k];
