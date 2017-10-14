@@ -1,5 +1,5 @@
-#ifndef PARSE_ARGS_H
-#define PARSE_ARGS_H
+#ifndef INPUT_ARGS_H
+#define INPUT_ARGS_H
 
 #include <stdbool.h>
 #include <stdlib.h>     /* for mode_t */

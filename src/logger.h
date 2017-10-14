@@ -1,5 +1,5 @@
-#ifndef LOGGING_H
-#define LOGGING_H
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include "input-args.h"
 
