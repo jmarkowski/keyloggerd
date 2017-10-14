@@ -6,6 +6,7 @@ CFLAGS  = -c -Wall -O0 -ggdb -std=gnu11
 CPPFLAGS = -DDEBUG
 
 C_FILES += main.c
+C_FILES += conf.c
 C_FILES += error.c
 C_FILES += input-args.c
 C_FILES += keylog.c

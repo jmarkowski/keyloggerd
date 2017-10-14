@@ -70,6 +70,13 @@ ESC, ESC, ESC | Kill `keyloggerd` daemon
 RSHIFT, RSHIFT, RSHIFT | Start / stop key logging
 
 
+## Configuration
+
+A `keyloggerd.conf` file may be used to configure the defaults for the
+keyloggerd daemon on startup.
+
+A default conf file is included in the repository.
+
 # Wish list
 
 This project is a work in progress, and so there are still several things I'd

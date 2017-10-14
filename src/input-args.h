@@ -23,5 +23,6 @@ typedef struct {
 } cmd_args_t;
 
 extern cmd_args_t parse_args(int argc, char *argv[]);
+extern mode_t str2mode(const char *mode_str);
 
 #endif

@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 #include "common.h"
+#include "conf.h"
 #include "input-args.h"
 #include "keylog.h"
 
@@ -15,7 +16,7 @@ static const char usage_str[] =
 
 #define is_equal(a, b) (!strcmp(a, b))
 
-static mode_t str2mode(const char *mode_str)
+mode_t str2mode(const char *mode_str)
 {
     mode_t mode = 0;
 
@@ -64,14 +65,26 @@ static mode_t str2mode(const char *mode_str)
 
 static cmd_args_t arg_defaults(char *prog_name)
 {
-    cmd_args_t default_args = {
-        .keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH),
-        .keylog.backspace = 8, /* ascii char 8 == backspace */
-    };
+    cmd_args_t default_args = read_conf();
 
     strncpy(default_args.prog_name, prog_name, MAX_PROG_NAME);
-    strncpy(default_args.keyboard_device, "/dev/input/event0", MAX_DEVICE_PATH);
-    strncpy(default_args.keylog.path, "/tmp/key.log", LOG_PATH_LEN);
+
+    if (default_args.keylog.mode == 0) {
+        default_args.keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    }
+
+    if (default_args.keylog.backspace == 0) {
+        default_args.keylog.backspace = 8; /* ascii char 8 == backspace */
+    }
+
+    if (strlen(default_args.keyboard_device) == 0) {
+        strncpy(default_args.keyboard_device,
+                "/dev/input/event0", MAX_DEVICE_PATH);
+    }
+
+    if (strlen(default_args.keylog.path) == 0) {
+        strncpy(default_args.keylog.path, "/tmp/key.log", LOG_PATH_LEN);
+    }
 
     return default_args;
 }
@@ -101,7 +114,7 @@ cmd_args_t parse_args(int argc, char *argv[])
                 exit(1);
             }
         } else if (is_equal(arg, "--append")) {
-            cmd_args.keylog.flags = KEY_LOG_FLAG_APPEND;
+            cmd_args.keylog.flags |= KEY_LOG_FLAG_APPEND;
         } else if (is_equal(arg, "--backspace-char")) {
             const char *bc_str = argv[++k];
 
