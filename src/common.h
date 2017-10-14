@@ -10,6 +10,6 @@
 #define ERROR -1
 
 /* Shared defines */
-#define KEY_LOG_LEN 128
+#define LOG_PATH_LEN 128
 
 #endif

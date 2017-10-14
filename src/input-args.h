@@ -15,7 +15,7 @@ typedef struct {
     char keyboard_device[MAX_DEVICE_PATH];
 
     struct {
-        char filename[KEY_LOG_LEN];
+        char path[LOG_PATH_LEN];
         char backspace;
         mode_t mode;
         int flags;

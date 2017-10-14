@@ -11,7 +11,6 @@
 #include "keylog.h"
 #include "logger.h"
 
-#define BUFFSIZE 255
 #define MAX_KEY_SEQ 5
 
 enum ev_value {
@@ -27,7 +26,7 @@ struct priv {
     struct {
         int fd; /* file descriptor */
         mode_t mode;
-        char name[KEY_LOG_LEN];
+        char path[LOG_PATH_LEN];
         int flags;
         char backspace;
     } log;
@@ -38,7 +37,7 @@ static int keylog_open(keylog_t *kl)
     struct priv *priv = (struct priv *) kl->priv;
 
     int oflag;
-    char path[BUFFSIZE];
+    char path[LOG_PATH_LEN];
     struct stat stat_cwd;
 
     /* open for writing only, create file if doesn't exist */
@@ -51,12 +50,13 @@ static int keylog_open(keylog_t *kl)
         oflag |= O_TRUNC;
     }
 
-    getcwd(path, BUFFSIZE);
+    getcwd(path, LOG_PATH_LEN);
 
     /* collect information about the current directory */
     stat(path, &stat_cwd);
 
-    snprintf(path, BUFFSIZE, "/tmp/%s", priv->log.name);
+    strncpy(path, priv->log.path, LOG_PATH_LEN);
+
     logger.info("Log file: %s", path);
 
     priv->log.fd = open(path, oflag, O_WRONLY);
@@ -74,7 +74,7 @@ static int keylog_close(keylog_t *kl)
 
     if (close(priv->log.fd) == ERROR) {
         logger.warn("Closing %s failed: %s",
-                     priv->log.name, strerror(errno));
+                     priv->log.path, strerror(errno));
         return ERROR;
     }
 
@@ -316,7 +316,7 @@ keylog_t *create_keylog(const cmd_args_t cmd_args)
     priv->log.flags = cmd_args.keylog.flags;
     priv->log.backspace = cmd_args.keylog.backspace;
     priv->log.mode = cmd_args.keylog.mode;
-    strncpy(priv->log.name, cmd_args.keylog.filename, KEY_LOG_LEN);
+    strncpy(priv->log.path, cmd_args.keylog.path, LOG_PATH_LEN);
 
     priv->num_seq = 0;
 

