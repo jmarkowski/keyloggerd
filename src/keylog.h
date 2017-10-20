@@ -21,19 +21,19 @@ struct keyseq {
     void (*callback)(keylog_t *kl);
 };
 
-typedef struct keylog {
+struct keylog {
     bool logging_enabled;
 
-    int (*open)(struct keylog *kl);
-    int (*close)(struct keylog *kl);
-    void (*process_event)(struct keylog *kl, struct input_event e);
-    void (*install_seq)(struct keylog *kl, struct keyseq ks);
+    int (*open)(keylog_t *kl);
+    int (*close)(keylog_t *kl);
+    void (*process_event)(keylog_t *kl, struct input_event e);
+    void (*install_seq)(keylog_t *kl, keyseq_t ks);
 
-    void (*pause)(struct keylog *kl);
-    void (*resume)(struct keylog *kl);
+    void (*pause)(keylog_t *kl);
+    void (*resume)(keylog_t *kl);
 
     void *priv;
-} keylog_t;
+};
 
 extern keylog_t *create_keylog(const cmd_args_t cmd_args);
 extern void destroy_keylog(keylog_t *kl);
