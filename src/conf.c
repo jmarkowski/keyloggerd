@@ -1,7 +1,9 @@
+#include <linux/input.h>
 #include <stdbool.h>    /* for bool */
 #include <stdio.h>      /* for fopen */
 #include <string.h>     /* for strcmp */
 
+#include "common.h"
 #include "conf.h"
 #include "input-args.h"
 #include "keylog.h"
@@ -51,7 +53,57 @@ static void str_trim(char *str)
         memset(str, 0, strlen(str));
         strncpy(str, s, e - s + 1);
     }
+}
 
+static unsigned key_str2enum(const char * const key_str)
+{
+    if (is_equal(key_str, "<ESC>")) {
+        return KEY_ESC;
+    } else if (is_equal(key_str, "<RIGHTSHIFT>")) {
+        return KEY_RIGHTSHIFT;
+    } else {
+        return 0;
+    }
+}
+
+static int set_seq(uarray_t *seq, const char * const strseq)
+{
+    const char *delim = ",";
+    const char *tok;
+    char tok_trim[LINE_LEN];
+    unsigned key;
+    char buf_copy[LINE_LEN];
+
+    strncpy(buf_copy, strseq, LINE_LEN);
+
+    tok = strtok(buf_copy, delim);
+    strncpy(tok_trim, tok, LINE_LEN);
+
+    str_trim(tok_trim);
+    printf("tok = %s\n", tok_trim);
+
+    seq->size = 0;
+    seq->el = malloc((seq->size + 1) * sizeof(unsigned));
+
+    if ((key = key_str2enum(tok_trim)) == 0) {
+        return ERROR;
+    }
+    seq->el[seq->size++] = key;
+
+    while ((tok = strtok(NULL, delim)) != NULL) {
+        strncpy(tok_trim, tok, LINE_LEN);
+        str_trim(tok_trim);
+        printf("tok = %s\n", tok_trim);
+
+        seq->el = realloc(seq->el, (seq->size + 1) * sizeof(unsigned));
+
+        if ((key = key_str2enum(tok_trim)) == 0) {
+            return ERROR;
+        }
+        seq->el[seq->size++] = key;
+    }
+
+    return OK;
 }
 
 static bool is_section(char *sect)
@@ -118,15 +170,17 @@ static void set_option(char *opt, cmd_args_t *args)
             printf("Unknown [log] entry: '%s'\n", key);
         }
     } else if (is_equal(section, "[sequence]")) {
-#if 0
         if (is_equal(key, "kill")) {
-            printf("kill is set to %s\n", val);
+            if (set_seq(&args->seq.kill, val) == ERROR) {
+                printf("Failed to install '%s = %s'\n", key, val);
+            }
         } else if (is_equal(key, "pause_resume")) {
-            printf("pause_resume is set to %s\n", val);
+            if (set_seq(&args->seq.pause_resume, val) == ERROR) {
+                printf("Failed to install '%s = %s'\n", key, val);
+            }
         } else {
             printf("Unknown [sequence] entry: '%s'\n", key);
         }
-#endif
     } else {
         printf("Unknown section: '%s'\n", section);
     }

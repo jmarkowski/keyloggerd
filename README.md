@@ -82,5 +82,5 @@ A default conf file is included in the repository.
 This project is a work in progress, and so there are still several things I'd
 like to do:
 
-* Add support for a conf file to configure key sequences
+* Use signals to re-read conf while running
 * Setup with autotools
