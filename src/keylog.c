@@ -252,7 +252,7 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     }
 }
 
-void keylog_process_event(keylog_t *kl, struct input_event e)
+static void keylog_process_event(keylog_t *kl, struct input_event e)
 {
     struct priv *priv = (struct priv *) kl->priv;
     static bool is_upper;
@@ -280,7 +280,7 @@ void keylog_process_event(keylog_t *kl, struct input_event e)
     }
 }
 
-void keylog_install_seq(keylog_t *kl, keyseq_t seq)
+static void keylog_install_seq(keylog_t *kl, keyseq_t seq)
 {
     struct priv *priv = (struct priv *) kl->priv;
 
@@ -289,12 +289,12 @@ void keylog_install_seq(keylog_t *kl, keyseq_t seq)
     priv->seq_list[priv->num_seq++] = seq;
 }
 
-void keylog_pause(keylog_t *kl)
+static void keylog_pause(keylog_t *kl)
 {
     kl->logging_enabled = false;
 }
 
-void keylog_resume(keylog_t *kl)
+static void keylog_resume(keylog_t *kl)
 {
     kl->logging_enabled = true;
 }
