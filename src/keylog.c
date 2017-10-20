@@ -284,6 +284,8 @@ void keylog_install_seq(keylog_t *kl, keyseq_t seq)
 {
     struct priv *priv = (struct priv *) kl->priv;
 
+    /* @todo Insert assert logic to protect against blowing past seq_list */
+
     priv->seq_list[priv->num_seq++] = seq;
 }
 
