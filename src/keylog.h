@@ -15,9 +15,8 @@ typedef struct keylog keylog_t;
 typedef struct keyseq keyseq_t;
 
 struct keyseq {
-    unsigned short *keys;
-    unsigned short size;
-    unsigned short index;
+    uarray_t *keys;
+    unsigned index;
     void (*callback)(keylog_t *kl);
 };
 

@@ -12,4 +12,9 @@
 /* Shared defines */
 #define LOG_PATH_LEN 128
 
+typedef struct uarray {
+    unsigned *el;
+    unsigned size;
+} uarray_t;
+
 #endif

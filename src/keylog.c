@@ -86,10 +86,10 @@ static bool has_seq_triggered(unsigned short ev_code,
 {
     bool seq_triggered = false;
 
-    if (ev_code == seq->keys[seq->index]) {
+    if (ev_code == (unsigned short) seq->keys->el[seq->index]) {
         seq->index++;
 
-        if (seq->index == seq->size) {
+        if (seq->index == seq->keys->size) {
             seq->index = 0;
             seq_triggered = true;
         }

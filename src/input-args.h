@@ -20,6 +20,11 @@ typedef struct {
         mode_t mode;
         int flags;
     } keylog;
+
+    struct {
+        uarray_t kill;
+        uarray_t pause_resume;
+    } seq;
 } cmd_args_t;
 
 extern cmd_args_t parse_args(int argc, char *argv[]);

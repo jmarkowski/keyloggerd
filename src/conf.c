@@ -131,7 +131,7 @@ static void set_option(char *opt, cmd_args_t *args)
 
 cmd_args_t read_conf(void)
 {
-    cmd_args_t conf_args = {};
+    cmd_args_t conf_args = { 0 };
 
     /* buffered I/O */
     FILE *fp;

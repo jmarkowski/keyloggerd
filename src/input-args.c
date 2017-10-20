@@ -1,6 +1,6 @@
 #include <stdbool.h>    /* for bool */
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>     /* for malloc */
 #include <string.h>     /* for strrchr */
 #include <sys/stat.h>
 
@@ -84,6 +84,38 @@ static cmd_args_t arg_defaults(char *prog_name)
 
     if (strlen(default_args.keylog.path) == 0) {
         strncpy(default_args.keylog.path, "/tmp/key.log", LOG_PATH_LEN);
+    }
+
+    if (default_args.seq.kill.size == 0) {
+        /*
+         * The sequence of keys to kill the keylogger daemon
+         */
+        const unsigned kill_keys[] = {
+            KEY_ESC, KEY_ESC, KEY_ESC
+        };
+
+        uarray_t *arr = &default_args.seq.kill;
+
+        arr->size = ARRAY_SIZE(kill_keys);
+        arr->el = malloc(arr->size * sizeof(unsigned));
+
+        memcpy(arr->el, kill_keys, arr->size * sizeof(unsigned));
+    }
+
+    if (default_args.seq.pause_resume.size == 0) {
+        /*
+         * The sequence of keys to start and stop the key logger
+         */
+        const unsigned pause_resume_keys[] = {
+            KEY_RIGHTSHIFT, KEY_RIGHTSHIFT, KEY_RIGHTSHIFT
+        };
+
+        uarray_t *arr = &default_args.seq.pause_resume;
+
+        arr->size = ARRAY_SIZE(pause_resume_keys);
+        arr->el = malloc(arr->size * sizeof(unsigned));
+
+        memcpy(arr->el, pause_resume_keys, arr->size * sizeof(unsigned));
     }
 
     return default_args;
