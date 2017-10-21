@@ -82,7 +82,5 @@ A default conf file is included in the repository.
 This project is a work in progress, and so there are still several things I'd
 like to do:
 
-* Add timestamps
 * Add support for a conf file to configure key sequences
-* Add ability to tell if capslock is enabled or not
 * Setup with autotools
