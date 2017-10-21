@@ -45,10 +45,13 @@ static void str_trim(char *str)
         }
     }
 
-    e = &buf[k];
+    if (k != -1) {
+        e = &buf[k];
 
-    memset(str, 0, LINE_LEN);
-    strncpy(str, s, e - s + 1);
+        memset(str, 0, strlen(str));
+        strncpy(str, s, e - s + 1);
+    }
+
 }
 
 static bool is_section(char *sect)
