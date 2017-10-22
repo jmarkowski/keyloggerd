@@ -220,12 +220,14 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     case KEY_CAPSLOCK: strncpy(strbuf, "<CAPSLOCK>", BUFLEN); break;
     case KEY_NUMLOCK: strncpy(strbuf, "<NUMLOCK>", BUFLEN); break;
     case KEY_SCROLLLOCK: strncpy(strbuf, "<SCROLLLOCK>", BUFLEN); break;
-    case KEY_RIGHTCTRL: strncpy(strbuf, "<R-CTRL>", BUFLEN); break;
-    case KEY_RIGHTALT: strncpy(strbuf, "<R-ALT>", BUFLEN); break;
     case KEY_LEFTCTRL: strncpy(strbuf, "<L-CTRL>", BUFLEN); break;
+    case KEY_RIGHTCTRL: strncpy(strbuf, "<R-CTRL>", BUFLEN); break;
     case KEY_LEFTALT: strncpy(strbuf, "<L-ALT>", BUFLEN); break;
+    case KEY_RIGHTALT: strncpy(strbuf, "<R-ALT>", BUFLEN); break;
     case KEY_LEFTMETA: strncpy(strbuf, "<L-META>", BUFLEN); break;
     case KEY_RIGHTMETA: strncpy(strbuf, "<R-META>", BUFLEN); break;
+    case KEY_LEFTSHIFT: strncpy(strbuf, "<L-SHIFT>", BUFLEN); break;
+    case KEY_RIGHTSHIFT: strncpy(strbuf, "<R-SHIFT>", BUFLEN); break;
 
     case KEY_HOME: strncpy(strbuf, "<HOME>", BUFLEN); break;
     case KEY_END: strncpy(strbuf, "<END>", BUFLEN); break;
