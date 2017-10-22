@@ -16,7 +16,7 @@ typedef struct {
 
     struct {
         char path[LOG_PATH_LEN];
-        char backspace;
+        char backspace_char;
         mode_t mode;
         int flags;
     } keylog;

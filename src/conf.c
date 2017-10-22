@@ -164,6 +164,8 @@ static void set_option(char *opt, cmd_args_t *args)
             } else {
                 printf("Invalid value for key '%s': '%s'\n", key, val);
             }
+        } else if (is_equal(key, "backspace_char")) {
+            args->keylog.backspace_char = val[0];
         } else if (is_equal(key, "path")) {
             strncpy(args->keylog.path, val, LOG_PATH_LEN);
         } else {

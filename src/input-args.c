@@ -73,8 +73,8 @@ static cmd_args_t arg_defaults(char *prog_name)
         default_args.keylog.mode = (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     }
 
-    if (default_args.keylog.backspace == 0) {
-        default_args.keylog.backspace = 8; /* ascii char 8 == backspace */
+    if (default_args.keylog.backspace_char == 0) {
+        default_args.keylog.backspace_char = 8; /* ascii char 8 == backspace */
     }
 
     if (strlen(default_args.keyboard_device) == 0) {
@@ -151,7 +151,7 @@ cmd_args_t parse_args(int argc, char *argv[])
             const char *bc_str = argv[++k];
 
             if (bc_str) {
-                cmd_args.keylog.backspace = bc_str[0];
+                cmd_args.keylog.backspace_char = bc_str[0];
             } else {
                 printf("Invalid option for backspace char: %s\n", bc_str);
                 exit(1);

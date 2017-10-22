@@ -28,7 +28,7 @@ struct priv {
         mode_t mode;
         char path[LOG_PATH_LEN];
         int flags;
-        char backspace;
+        char backspace_char;
     } log;
 };
 
@@ -173,7 +173,7 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     case KEY_BACKSLASH: lc = '\\'; uc = '|'; break;
 
     case KEY_BACKSPACE:
-        lc = uc = priv->log.backspace;
+        lc = uc = priv->log.backspace_char;
         break;
 
     case KEY_MINUS: lc = '-'; uc = '_'; break;
@@ -319,7 +319,7 @@ keylog_t *create_keylog(const cmd_args_t cmd_args)
     kl->resume = keylog_resume;
 
     priv->log.flags = cmd_args.keylog.flags;
-    priv->log.backspace = cmd_args.keylog.backspace;
+    priv->log.backspace_char = cmd_args.keylog.backspace_char;
     priv->log.mode = cmd_args.keylog.mode;
     strncpy(priv->log.path, cmd_args.keylog.path, LOG_PATH_LEN);
 

@@ -89,6 +89,11 @@ tags. For example, when the escape key is logged, it is recorded as "\<ESC>".
 Any unknown keys will be recorded as a number surrounded by the "<" and ">"
 tags.
 
+By default, any backspaces will be recorded using the ASCII backspace character,
+and thus work as if the previous character was being "deleted". If you want to
+explicitly log the backspace as a character, you may specify it via
+`--backspace-char`, or via the `backspace_char` field in the configuration file.
+
 # Wish list
 
 This project is a work in progress, and so there are still several things I'd
