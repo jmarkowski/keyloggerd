@@ -1,6 +1,6 @@
 # keyloggerd
 
-`keyloggerd` program is a background key logging daemon that runs for linux.
+`keyloggerd` is a background key logging daemon that runs for linux.
 
 # Installation
 
@@ -64,11 +64,12 @@ $ journalctl -xe
 Because the keys are logged, you may use the following sequence of keys to
 control the daemon:
 
-Key Sequence | Action
--------------|-------
-ESC, ESC, ESC | Kill `keyloggerd` daemon
-RSHIFT, RSHIFT, RSHIFT | Start / stop key logging
+Action                      | Key Sequence
+----------------------------|-----------------------------------
+Kill `keyloggerd` daemon    | ESC, ESC, ESC
+Start / stop key logging    | RIGHTSHIFT, RIGHTSHIFT, RIGHTSHIFT
 
+These secret key sequences are configurable via `keyloggerd.conf`.
 
 ## Configuration
 
@@ -83,4 +84,5 @@ This project is a work in progress, and so there are still several things I'd
 like to do:
 
 * Use signals to re-read conf while running
+* Allow keys to be configured via `keyloggerd.conf`
 * Setup with autotools
