@@ -78,11 +78,22 @@ keyloggerd daemon on startup.
 
 A default conf file is included in the repository.
 
+# Interpreting the Key Log
+
+All keys are logged in `/tmp/key.log` by default unless otherwise specified via
+the configuration file or the `-f` option.
+
+You will notice that "invisible" keys are recorded in surrounding "<" and ">"
+tags. For example, when the escape key is logged, it is recorded as "\<ESC>".
+
+Any unknown keys will be recorded as a number surrounded by the "<" and ">"
+tags.
+
 # Wish list
 
 This project is a work in progress, and so there are still several things I'd
 like to do:
 
+* Setup with autotools
 * Use signals to re-read conf while running
 * Allow keys to be configured via `keyloggerd.conf`
-* Setup with autotools

