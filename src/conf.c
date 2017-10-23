@@ -59,8 +59,46 @@ static unsigned key_str2enum(const char * const key_str)
 {
     if (is_equal(key_str, "<ESC>")) {
         return KEY_ESC;
+    } else if (is_equal(key_str, "<LEFTSHIFT>")) {
+        return KEY_LEFTSHIFT;
     } else if (is_equal(key_str, "<RIGHTSHIFT>")) {
         return KEY_RIGHTSHIFT;
+    } else if (is_equal(key_str, "<LEFTCTRL>")) {
+        return KEY_LEFTCTRL;
+    } else if (is_equal(key_str, "<RIGHTCTRL>")) {
+        return KEY_RIGHTCTRL;
+    } else if (is_equal(key_str, "<LEFTALT>")) {
+        return KEY_LEFTALT;
+    } else if (is_equal(key_str, "<RIGHTALT>")) {
+        return KEY_RIGHTALT;
+    } else if (is_equal(key_str, "<LEFTMETA>")) {
+        return KEY_LEFTMETA;
+    } else if (is_equal(key_str, "<RIGHTMETA>")) {
+        return KEY_RIGHTMETA;
+    } else if (is_equal(key_str, "<F1>")) {
+        return KEY_F1;
+    } else if (is_equal(key_str, "<F2>")) {
+        return KEY_F2;
+    } else if (is_equal(key_str, "<F3>")) {
+        return KEY_F3;
+    } else if (is_equal(key_str, "<F4>")) {
+        return KEY_F4;
+    } else if (is_equal(key_str, "<F5>")) {
+        return KEY_F5;
+    } else if (is_equal(key_str, "<F6>")) {
+        return KEY_F6;
+    } else if (is_equal(key_str, "<F7>")) {
+        return KEY_F7;
+    } else if (is_equal(key_str, "<F8>")) {
+        return KEY_F8;
+    } else if (is_equal(key_str, "<F9>")) {
+        return KEY_F9;
+    } else if (is_equal(key_str, "<F10>")) {
+        return KEY_F10;
+    } else if (is_equal(key_str, "<F11>")) {
+        return KEY_F11;
+    } else if (is_equal(key_str, "<F12>")) {
+        return KEY_F12;
     } else {
         return 0;
     }
