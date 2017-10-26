@@ -118,7 +118,6 @@ static int set_seq(uarray_t *seq, const char * const strseq)
     strncpy(tok_trim, tok, LINE_LEN);
 
     str_trim(tok_trim);
-    printf("tok = %s\n", tok_trim);
 
     seq->size = 0;
     seq->el = malloc((seq->size + 1) * sizeof(unsigned));
@@ -131,7 +130,6 @@ static int set_seq(uarray_t *seq, const char * const strseq)
     while ((tok = strtok(NULL, delim)) != NULL) {
         strncpy(tok_trim, tok, LINE_LEN);
         str_trim(tok_trim);
-        printf("tok = %s\n", tok_trim);
 
         seq->el = realloc(seq->el, (seq->size + 1) * sizeof(unsigned));
 
