@@ -147,13 +147,13 @@ int main(int argc, char *argv[])
     lf = create_lockfile(LOCKFILE);
 
     if (lf->lock(lf) == ERROR) {
-        err_quit("Aborting: daemon is already running");
+        err_quit("Aborting: failed to lock %s", lf->file);
     }
 
     keyloggerd(cmd_args);
 
     if (lf->unlock(lf) == ERROR) {
-        err_quit("Failed to release lock to %s", lf->file);
+        err_quit("Failed to release lock of %s", lf->file);
     }
 
     destroy_lockfile(lf);
