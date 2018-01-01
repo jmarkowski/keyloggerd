@@ -149,7 +149,7 @@ static bool is_section(char *sect)
     char *b = strchr(sect, ']');
 
     if (a && b) {
-        is_section = (b - a == strlen(sect) - 2);
+        is_section = (b - a) == (strlen(sect) - 2);
     }
 
     return is_section;
