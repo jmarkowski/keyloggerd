@@ -13,23 +13,29 @@ $ cd keyloggerd
 $ make
 ```
 
-This will compile the `keyloggerd` daemon.
+This will compile the `keyloggerd` program.
 
-# Usage
+Note: this will not *install* the program, I have yet to do this ;) However,
+if you manually want to install it, you may simply copy the `keyloggerd` program
+into /usr/local/bin (or equivalent).
 
-`keyloggerd` must be run as a super user because it requires detection of the
-input keyboard events from `/dev/input/event0` (default)
+# Quickstart
 
 ```
 $ sudo ./keyloggerd
 ```
 
-This results in two files being created:
+`keyloggerd` must be run as a super user because it requires detection of the
+input keyboard events from `/dev/input/event0` (default)
 
-1. `/var/run/keyloggerd.pid` containing the PID of the daemon
-2. `/tmp/key.log` that is now logging the keys pressed
+# Where are the logs?
 
-If you find that nothing is getting logged to `key.log`, no matter how many keys
+`keyloggerd` generates two files:
+
+1. `/var/run/keyloggerd.pid`, which contains the PID of the daemon
+2. `/tmp/key.log`, which contains the keys that have been pressed
+
+If you find that nothing is being logged to `key.log`, no matter how many keys
 you bash, you may need to change your input device. For example:
 
 ```
@@ -50,14 +56,16 @@ instead you'd like to append to it each time, you may use the `--append` switch.
 $ sudo ./keyloggerd --append
 ```
 
-## Daemon Logs
+## Daemon Status
 
-The keylogger daemon prints log information into the system log, which may be
+The keylogger daemon prints status information into the system log, which may be
 viewed as follows
 
 ```
 $ journalctl -xe
 ```
+
+This is useful for debugging any issues you may be experiencing.
 
 ## Secret Key Sequences
 
