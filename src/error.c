@@ -15,7 +15,7 @@ void err_quit(const char *fmt, ...)
     err_do(fmt, ap);
     va_end(ap);
 
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 static void err_do(const char *fmt, va_list ap)

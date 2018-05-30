@@ -61,7 +61,7 @@ static void daemonize(void)
         err_quit("Cannot fork");
     } else if (pid != 0) { /* parent */
         logger.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
     setsid();
@@ -83,7 +83,7 @@ static void daemonize(void)
         err_quit("Cannot fork");
     } else if (pid != 0) { /* parent */
         logger.debug("Parent [%d] closed (child [%d] lives on)", getpid(), pid);
-        exit(0);
+        exit(EXIT_SUCCESS);
     }
 
     /*
@@ -161,5 +161,5 @@ int main(int argc, char *argv[])
     logger.warn("Stopping daemon");
     logger.close();
 
-    exit(0);
+    exit(EXIT_SUCCESS);
 }

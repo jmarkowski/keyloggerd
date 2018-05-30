@@ -143,7 +143,7 @@ cmd_args_t parse_args(int argc, char *argv[])
                 strncpy(cmd_args.keylog.path, filepath_str, LOG_PATH_LEN);
             } else {
                 printf("Invalid file path for key log: %s\n", filepath_str);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         } else if (is_equal(arg, "--append")) {
             cmd_args.keylog.flags |= KEY_LOG_FLAG_APPEND;
@@ -154,7 +154,7 @@ cmd_args_t parse_args(int argc, char *argv[])
                 cmd_args.keylog.backspace_char = bc_str[0];
             } else {
                 printf("Invalid option for backspace char: %s\n", bc_str);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         } else if (is_equal(arg, "--keyboard-device")) {
             const char *device_str = argv[++k];
@@ -163,13 +163,13 @@ cmd_args_t parse_args(int argc, char *argv[])
                 strncpy(cmd_args.keyboard_device, device_str, MAX_DEVICE_PATH);;
             } else {
                 printf("Invalid option for device: %s\n", device_str);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         } else if (is_equal(arg, "--debug")) {
             cmd_args.debug = true;
         } else if (is_equal(arg, "--help") || is_equal(arg, "-h")) {
             printf("%s\n", usage_str);
-            exit(0);
+            exit(EXIT_SUCCESS);
         } else if (is_equal(arg, "--mode")) {
             const char *mode_str = argv[++k];
 
@@ -177,12 +177,12 @@ cmd_args_t parse_args(int argc, char *argv[])
                 cmd_args.keylog.mode = str2mode(mode_str);
             } else {
                 printf("Invalid option for mode: %s\n", mode_str);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         } else {
             printf("Unknown option: %s\n", argv[k]);
             printf("%s\n", usage_str);
-            exit(1);
+            exit(EXIT_FAILURE);
         }
     }
 
