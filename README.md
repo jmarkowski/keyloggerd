@@ -34,20 +34,29 @@ input keyboard events from `/dev/input/event0` (default)
 1. `/var/run/keyloggerd.pid`, which contains the PID of the daemon
 2. `/tmp/key.log`, which contains the keys that have been pressed
 
-If you find that nothing is being logged to `key.log`, no matter how many keys
-you bash, you may need to change your input device. For example:
-
-    $ sudo ./keyloggerd --keyboard-device /dev/input/event1
-
-A good hint on how to discover your input device is to look in the
-`/var/log/Xorg.0.log` file.
-
-    $ cat /var/log/Xorg.0.log | grep keyboard
-
 The `key.log` will be overwritten every time the `keyloggerd` daemon runs. If
 instead you'd like to append to it each time, you may use the `--append` switch.
 
     $ sudo ./keyloggerd --append
+
+
+## Something's wrong, my log file is empty
+
+If you find that nothing is being logged to `/tmp/key.log`, no matter how many
+keys you bash, you may need to change your input device using the
+`--keyboard-device` argument. For example:
+
+    $ sudo ./keyloggerd --keyboard-device /dev/input/event1
+
+To discover the input device for your keyboard, try running the included
+`discover-keyboard-device.sh` script.
+
+    ./scripts/discover-keyboard-device.sh
+
+Alternatively, a good hint on how to discover your input device is to look in
+the `/var/log/Xorg.0.log` file.
+
+    $ cat /var/log/Xorg.0.log | grep keyboard
 
 ## Daemon Status
 
