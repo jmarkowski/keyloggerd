@@ -5,7 +5,6 @@
 
 #include "common.h"
 #include "conf.h"
-#include "input-args.h"
 #include "keylog.h"
 
 #define CONF_PATH "keyloggerd.conf"

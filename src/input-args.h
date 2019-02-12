@@ -6,9 +6,6 @@
 
 #include "common.h"
 
-#define MAX_PROG_NAME 12
-#define MAX_DEVICE_PATH 100
-
 typedef struct {
     bool debug;
     char prog_name[MAX_PROG_NAME];

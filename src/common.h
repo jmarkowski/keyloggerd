@@ -11,6 +11,8 @@
 
 /* Shared defines */
 #define LOG_PATH_LEN 128
+#define MAX_PROG_NAME 12
+#define MAX_DEVICE_PATH 100
 
 typedef struct uarray {
     unsigned *el;
