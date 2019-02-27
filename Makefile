@@ -31,7 +31,7 @@ endif
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(QUIET_LD)$(CC) -o $(PROG) $^
+	$(QUIET_LD)$(CC) -o $@ $^
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(QUIET_CC)$(CC) $(CFLAGS) $(CPPFLAGS) $< -o $@
